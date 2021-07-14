@@ -91,17 +91,17 @@ MouseInteractorHighLightActor::~MouseInteractorHighLightActor()
 void MouseInteractorHighLightActor::OnLeftButtonDown()
 {
     vtkNew<vtkNamedColors> colors;
-    int *clickPos = this->GetInteractor()->GetEventPosition();
+    int *clickPos = GetInteractor()->GetEventPosition();
     vtkNew<vtkPropPicker> picker;
-    picker->Pick(clickPos[0], clickPos[1], 0, this->GetDefaultRenderer());
-    if (this->LastPickedActor) {
-        this->LastPickedActor->GetProperty()->DeepCopy(this->LastPickedProperty);
+    picker->Pick(clickPos[0], clickPos[1], 0, GetDefaultRenderer());
+    if (LastPickedActor) {
+        LastPickedActor->GetProperty()->DeepCopy(LastPickedProperty);
     }
-    this->LastPickedActor = picker->GetActor();
-    if (this->LastPickedActor) {
-        this->LastPickedProperty->DeepCopy(this->LastPickedActor->GetProperty());
-        this->LastPickedActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
-        this->LastPickedActor->GetProperty()->SetOpacity(1.0);
+    LastPickedActor = picker->GetActor();
+    if (LastPickedActor) {
+        LastPickedProperty->DeepCopy(LastPickedActor->GetProperty());
+        LastPickedActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
+        LastPickedActor->GetProperty()->SetOpacity(1.0);
     }
     int i = 0;
     bool select = false;
@@ -122,46 +122,46 @@ void MouseInteractorHighLightActor::OnLeftButtonDown()
 
 void MouseInteractorHighLightActor::OnMouseMove()
 {
-    int x = this->Interactor->GetEventPosition()[0];
-    int y = this->Interactor->GetEventPosition()[1];
-    switch (this->State) {
+    int x = Interactor->GetEventPosition()[0];
+    int y = Interactor->GetEventPosition()[1];
+    switch (State) {
     case VTKIS_ROTATE:
-        this->FindPokedRenderer(x, y);
-        this->Rotate();
-        this->InvokeEvent(vtkCommand::InteractionEvent, nullptr);
+        FindPokedRenderer(x, y);
+        Rotate();
+        InvokeEvent(vtkCommand::InteractionEvent, nullptr);
         break;
     case VTKIS_PAN:
-        this->FindPokedRenderer(x, y);
-        this->Pan();
-        this->InvokeEvent(vtkCommand::InteractionEvent, nullptr);
+        FindPokedRenderer(x, y);
+        Pan();
+        InvokeEvent(vtkCommand::InteractionEvent, nullptr);
         break;
     }
 }
 
 void MouseInteractorHighLightActor::Rotate()
 {
-    if (this->CurrentRenderer == nullptr) {
+    if (CurrentRenderer == nullptr) {
         return;
     }
-    vtkRenderWindowInteractor *rwi = this->Interactor;
+    vtkRenderWindowInteractor *rwi = Interactor;
     int dx = rwi->GetEventPosition()[0] - rwi->GetLastEventPosition()[0];
     int dy = 0;
-    int *size = this->CurrentRenderer->GetRenderWindow()->GetSize();
+    int *size = CurrentRenderer->GetRenderWindow()->GetSize();
     double delta_elevation = -20.0 / size[1];
     double delta_azimuth = -20.0 / size[0];
-    double rxf = dx * delta_azimuth * this->MotionFactor;
-    double ryf = dy * delta_elevation * this->MotionFactor;
-    vtkCamera *camera = this->CurrentRenderer->GetActiveCamera();
+    double rxf = dx * delta_azimuth * MotionFactor;
+    double ryf = dy * delta_elevation * MotionFactor;
+    vtkCamera *camera = CurrentRenderer->GetActiveCamera();
     camera->Azimuth(rxf);
     camera->Elevation(ryf);
     camera->OrthogonalizeViewUp();
 
-    if (this->AutoAdjustCameraClippingRange) {
-        this->CurrentRenderer->ResetCameraClippingRange();
+    if (AutoAdjustCameraClippingRange) {
+        CurrentRenderer->ResetCameraClippingRange();
     }
 
     if (rwi->GetLightFollowCamera()) {
-        this->CurrentRenderer->UpdateLightsGeometryToFollowCamera();
+        CurrentRenderer->UpdateLightsGeometryToFollowCamera();
     }
 
     rwi->Render();
@@ -204,7 +204,6 @@ int main(int argc, char *argv[])
     style->SetDefaultRenderer(renderer);
     renderWindowInteractor->SetInteractorStyle(style);
 
-    vtkNew<vtkIdFilter> idFilter;
     foreach (auto var, filename) {
         vtkNew<vtkSTLReader> reader;
         reader->SetFileName(var.toLocal8Bit().data());

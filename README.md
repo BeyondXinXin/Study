@@ -14,3 +14,6 @@ stl模型转png
 
 模型选择
 
+## InteractSeparately
+
+多个actor,单独交互

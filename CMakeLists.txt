@@ -29,6 +29,7 @@ include(${VTK_USE_FILE})
 add_subdirectory(PedicleScrewSimulation)
 #add_subdirectory(Stl2Png)
 add_subdirectory(HighlightPicked)
+add_subdirectory(InteractSeparately)
 
 
 add_custom_target(clean-all
