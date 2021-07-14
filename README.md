@@ -1,6 +1,6 @@
 ﻿# study_vtk
 
-跟vtk有关的一些
+工作学习总会单独开发一些小功能，保留记录分享下。
 
 ## PedicleScrewSimulation
 
