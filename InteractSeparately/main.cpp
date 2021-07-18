@@ -30,7 +30,6 @@ VTK_MODULE_INIT(vtkRenderingVolumeOpenGL2);
 
 static QStringList filename {
     "./etc/STL/L5.STL",
-
     "./etc/STL/S1.STL",
     "./etc/STL/S2.STL",
 };
