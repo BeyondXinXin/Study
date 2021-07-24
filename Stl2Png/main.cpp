@@ -17,8 +17,6 @@
 #include <vtkSmartPointer.h>
 #include <vtkTextProperty.h>
 
-VTK_MODULE_INIT(vtkRenderingOpenGL2);
-
 static bool ShowVtkDebugPolydata(vtkSmartPointer<vtkPolyData> surface);
 static bool WritePng(const vtkSmartPointer<vtkImageData> & imagedata);
 

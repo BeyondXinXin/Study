@@ -23,11 +23,6 @@
 #include <vtkSTLReader.h>
 #include <vtkSphereSource.h>
 
-VTK_MODULE_INIT(vtkRenderingOpenGL2);
-VTK_MODULE_INIT(vtkInteractionStyle);
-VTK_MODULE_INIT(vtkRenderingFreeType);
-VTK_MODULE_INIT(vtkRenderingVolumeOpenGL2);
-
 static QStringList filename {
     "./etc/STL/C1.STL",
     "./etc/STL/C2.STL",
@@ -64,7 +59,7 @@ class MouseInteractorHighLightActor : public vtkInteractorStyleTrackballCamera
 {
 public:
     vtkTypeMacro(MouseInteractorHighLightActor, vtkInteractorStyleTrackballCamera);
-    static MouseInteractorHighLightActor *New();
+    static MouseInteractorHighLightActor * New();
     MouseInteractorHighLightActor();
     ~MouseInteractorHighLightActor() override;
     void OnLeftButtonDown() override;
@@ -73,8 +68,8 @@ public:
     QList<vtkActor *> actors_;
 
 private:
-    vtkActor *LastPickedActor;
-    vtkProperty *LastPickedProperty;
+    vtkActor * LastPickedActor;
+    vtkProperty * LastPickedProperty;
 };
 
 MouseInteractorHighLightActor::MouseInteractorHighLightActor()
@@ -91,7 +86,7 @@ MouseInteractorHighLightActor::~MouseInteractorHighLightActor()
 void MouseInteractorHighLightActor::OnLeftButtonDown()
 {
     vtkNew<vtkNamedColors> colors;
-    int *clickPos = GetInteractor()->GetEventPosition();
+    int * clickPos = GetInteractor()->GetEventPosition();
     vtkNew<vtkPropPicker> picker;
     picker->Pick(clickPos[0], clickPos[1], 0, GetDefaultRenderer());
     if (LastPickedActor) {
@@ -143,15 +138,15 @@ void MouseInteractorHighLightActor::Rotate()
     if (CurrentRenderer == nullptr) {
         return;
     }
-    vtkRenderWindowInteractor *rwi = Interactor;
+    vtkRenderWindowInteractor * rwi = Interactor;
     int dx = rwi->GetEventPosition()[0] - rwi->GetLastEventPosition()[0];
     int dy = 0;
-    int *size = CurrentRenderer->GetRenderWindow()->GetSize();
+    int * size = CurrentRenderer->GetRenderWindow()->GetSize();
     double delta_elevation = -20.0 / size[1];
     double delta_azimuth = -20.0 / size[0];
     double rxf = dx * delta_azimuth * MotionFactor;
     double ryf = dy * delta_elevation * MotionFactor;
-    vtkCamera *camera = CurrentRenderer->GetActiveCamera();
+    vtkCamera * camera = CurrentRenderer->GetActiveCamera();
     camera->Azimuth(rxf);
     camera->Elevation(ryf);
     camera->OrthogonalizeViewUp();
@@ -172,11 +167,11 @@ vtkStandardNewMacro(MouseInteractorHighLightActor);
 class SelkectCallback : public vtkCommand
 {
 public:
-    static SelkectCallback *New()
+    static SelkectCallback * New()
     {
         return new SelkectCallback;
     }
-    virtual void Execute(vtkObject *caller, unsigned long role, void *data)
+    virtual void Execute(vtkObject * caller, unsigned long role, void * data)
     {
         if (role == vtkCommand::UserEvent + 1) {
             const auto select_id = static_cast<int *>(data);
@@ -184,10 +179,10 @@ public:
         }
     }
 
-    QLabel *lab;
+    QLabel * lab;
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     QApplication a(argc, argv);
 
@@ -219,12 +214,12 @@ int main(int argc, char *argv[])
     }
 
     QWidget widget;
-    QVBoxLayout *layout = new QVBoxLayout(); //水平布局
-    QLabel *lab = new QLabel(&widget);
+    QVBoxLayout * layout = new QVBoxLayout(); //水平布局
+    QLabel * lab = new QLabel(&widget);
     layout->addWidget(lab);
     int obj_id = 0;
     foreach (auto var, filename) {
-        QCheckBox *box = new QCheckBox(&widget);
+        QCheckBox * box = new QCheckBox(&widget);
         box->setText(var);
         box->setObjectName(QString("%1").arg(obj_id));
         box->setChecked(true);

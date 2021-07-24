@@ -17,14 +17,9 @@
 #include <vtkRenderer.h>
 #include <vtkTextProperty.h>
 
-VTK_MODULE_INIT(vtkRenderingOpenGL2);
-VTK_MODULE_INIT(vtkInteractionStyle);
-VTK_MODULE_INIT(vtkRenderingFreeType);
-VTK_MODULE_INIT(vtkRenderingVolumeOpenGL2);
-
 static bool ShowVtkDebugPolydata(vtkSmartPointer<vtkPolyData> surface);
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     QApplication::setAttribute(Qt::AA_DontCheckOpenGLContextThreadAffinity);
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

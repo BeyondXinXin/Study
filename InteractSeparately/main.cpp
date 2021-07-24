@@ -23,18 +23,13 @@
 #include <vtkSTLReader.h>
 #include <vtkSphereSource.h>
 
-VTK_MODULE_INIT(vtkRenderingOpenGL2);
-VTK_MODULE_INIT(vtkInteractionStyle);
-VTK_MODULE_INIT(vtkRenderingFreeType);
-VTK_MODULE_INIT(vtkRenderingVolumeOpenGL2);
-
 static QStringList filename {
     "./etc/STL/L5.STL",
     "./etc/STL/S1.STL",
     "./etc/STL/S2.STL",
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char * argv[])
 {
     QApplication a(argc, argv);
 
