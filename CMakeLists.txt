@@ -5,8 +5,7 @@ include(cmake/clean-all.cmake)
 
 project(StudyVtk VERSION "0.0.0")
 
-list(APPEND CMAKE_PREFIX_PATH "D:/lib/STthird-party")
-list(APPEND CMAKE_MODULE_PATH "D:/lib/STthird-party/cmake")
+list(APPEND CMAKE_PREFIX_PATH "C:/lib/vtk/bulid")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG
     ${PROJECT_SOURCE_DIR}/bin/Debug)
@@ -30,7 +29,7 @@ add_subdirectory(PedicleScrewSimulation)
 add_subdirectory(Stl2Png)
 add_subdirectory(HighlightPicked)
 add_subdirectory(InteractSeparately)
-
+add_subdirectory(ScalpelCutting)
 
 add_custom_target(clean-all
    COMMAND ${CMAKE_BUILD_TOOL} clean
