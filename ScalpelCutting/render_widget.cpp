@@ -6,6 +6,7 @@
 #include <QPainterPath>
 
 #include <vtkObjectFactory.h>
+#include <vtkRenderWindow.h>
 
 vtkStandardNewMacro(InteractorStyle);
 
@@ -89,15 +90,34 @@ void RenderWidget::SetStyleState(const State & state)
     case DrawCutLine: {
         style_->interactive_ = false;
         state_ = DrawCutLine;
-        break;
-    }
-    default: {
+    } break;
+    case CutLineInside:
+    case CutLineOutside: {
         style_->interactive_ = true;
         state_ = Normal;
-        break;
-    }
+        emit SgnCuttingLine(state);
+        renderWindow()->Render();
+    } break;
+    case Normal: {
+        style_->interactive_ = true;
+        state_ = Normal;
+
+    } break;
     }
     cutting_points_.clear();
+}
+
+QPainterPath RenderWidget::GetCuttingPath() const
+{
+    if (cutting_points_.length() < 1) {
+        return QPainterPath();
+    }
+
+    QPainterPath path(cutting_points_[0]);
+    for (int i = 1; i < cutting_points_.size(); ++i) {
+        path.lineTo(cutting_points_[i]);
+    }
+    return path;
 }
 
 void RenderWidget::paintGL()
@@ -113,7 +133,6 @@ void RenderWidget::mousePressEvent(QMouseEvent * event)
 {
     if (event->button() == Qt::LeftButton && state_ == DrawCutLine) {
         leftbtn_drag_ = true;
-        emit SgnBegingDrawCutLine();
         cutting_points_.clear();
     }
     QVTKOpenGLNativeWidget::mousePressEvent(event);
@@ -123,7 +142,6 @@ void RenderWidget::mouseReleaseEvent(QMouseEvent * event)
 {
     if (event->button() == Qt::LeftButton && state_ == DrawCutLine) {
         leftbtn_drag_ = false;
-        emit SgnEndDrawCutLine();
     }
     QVTKOpenGLNativeWidget::mouseReleaseEvent(event);
 }

@@ -1,9 +1,16 @@
-﻿#include <QApplication>
+﻿#include "render_widget.h"
+
+#include <QApplication>
+#include <QDebug>
+#include <QPainterPath>
 #include <QPushButton>
 
 #include <vtkCamera.h>
 #include <vtkColorTransferFunction.h>
 #include <vtkContourValues.h>
+#include <vtkCoordinate.h>
+#include <vtkImageData.h>
+#include <vtkImageIterator.h>
 #include <vtkInteractorStyleTrackballCamera.h>
 #include <vtkMetaImageReader.h>
 #include <vtkNamedColors.h>
@@ -13,11 +20,14 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
+#include <vtkRendererCollection.h>
 #include <vtkVolume.h>
 #include <vtkVolumeProperty.h>
 
-#include "render_widget.h"
-
+void Cuting(vtkSmartPointer<vtkImageData> img,
+            vtkSmartPointer<vtkVolume> volume,
+            vtkSmartPointer<vtkRenderer> renderer,
+            const QPainterPath & path, const int & type);
 void GenerateTestButton(RenderWidget * wid);
 
 int main(int argc, char * argv[])
@@ -28,9 +38,13 @@ int main(int argc, char * argv[])
     vtkNew<vtkMetaImageReader> reader;
     const static QString path = "C:/Users/77935/Pictures/HeadMRVolume/HeadMRVolume.mhd";
     reader->SetFileName(path.toLocal8Bit().data());
+    reader->Update();
 
-    vtkNew<vtkOpenGLGPUVolumeRayCastMapper> mapper;
-    mapper->SetInputConnection(reader->GetOutputPort());
+    auto image_data = vtkSmartPointer<vtkImageData>::New();
+    image_data = reader->GetOutput();
+
+    auto mapper = vtkSmartPointer<vtkOpenGLGPUVolumeRayCastMapper>::New();
+    mapper->SetInputData(image_data);
     mapper->AutoAdjustSampleDistancesOff();
     mapper->SetSampleDistance(0.5);
     mapper->SetBlendModeToIsoSurface();
@@ -51,10 +65,10 @@ int main(int argc, char * argv[])
     volume_property->SetInterpolationTypeToLinear();
     volume_property->SetColor(color_transfer_fun);
     volume_property->SetScalarOpacity(scalarOpacity);
-    vtkNew<vtkVolume> volume;
+    auto volume = vtkSmartPointer<vtkVolume>::New();
     volume->SetMapper(mapper);
     volume->SetProperty(volume_property);
-    vtkNew<vtkRenderer> renderer;
+    auto renderer = vtkSmartPointer<vtkRenderer>::New();
     renderer->AddVolume(volume);
     renderer->SetBackground(colors->GetColor3d("cornflower").GetData());
     renderer->ResetCamera();
@@ -65,11 +79,16 @@ int main(int argc, char * argv[])
     RenderWidget * wid = new RenderWidget();
     wid->setFixedSize(800, 600);
     wid->renderWindow()->AddRenderer(renderer);
-    wid->show();
+
+    QObject::connect(wid, &RenderWidget::SgnCuttingLine, wid, [wid, renderer, image_data, volume](const int & type) {
+        Cuting(image_data, volume, renderer, wid->GetCuttingPath(), type);
+    });
 
     // 几个按钮以及逻辑
     GenerateTestButton(wid);
 
+    // 显示
+    wid->show();
     return a.exec();
 }
 
@@ -113,12 +132,12 @@ void GenerateTestButton(RenderWidget * wid)
     });
 
     QObject::connect(btn_cancel, &QPushButton::clicked, wid, [&, wid] {
-        wid->SetStyleState(RenderWidget::Normal);
+        wid->SetStyleState(RenderWidget::CutLineInside);
         FunChangeBtnState(false);
     });
 
     QObject::connect(btn_inside, &QPushButton::clicked, wid, [&, wid] {
-        wid->SetStyleState(RenderWidget::Normal);
+        wid->SetStyleState(RenderWidget::CutLineOutside);
         FunChangeBtnState(false);
     });
 
@@ -126,4 +145,26 @@ void GenerateTestButton(RenderWidget * wid)
         wid->SetStyleState(RenderWidget::Normal);
         FunChangeBtnState(false);
     });
+}
+
+void Cuting(vtkSmartPointer<vtkImageData> image_data,
+            vtkSmartPointer<vtkVolume> volume,
+            vtkSmartPointer<vtkRenderer> renderer,
+            const QPainterPath & path, const int & type)
+{
+    int img_dims[3];
+    image_data->GetDimensions(img_dims);
+    int img_region[] = { 0, img_dims[0] - 1, 0, img_dims[1] - 1, 0, img_dims[2] - 1 };
+    vtkImageIterator<unsigned char> img_iterator(image_data, img_region);
+    while (!img_iterator.IsAtEnd()) {
+        auto iter_begin = img_iterator.BeginSpan();
+        auto iter_end = img_iterator.EndSpan();
+        for (auto iter = iter_begin; iter != iter_end; ++iter) {
+            *iter = 0;
+        }
+        img_iterator.NextSpan();
+    }
+    volume->Update();
+    renderer->RemoveVolume(volume);
+    renderer->AddVolume(volume);
 }

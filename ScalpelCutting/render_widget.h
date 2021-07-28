@@ -31,6 +31,8 @@ public:
     {
         Normal,
         DrawCutLine,
+        CutLineInside,
+        CutLineOutside,
     };
 
 public:
@@ -38,10 +40,10 @@ public:
     ~RenderWidget() override;
 
     void SetStyleState(const State & state);
+    QPainterPath GetCuttingPath() const;
 
 signals:
-    void SgnBegingDrawCutLine();
-    void SgnEndDrawCutLine();
+    void SgnCuttingLine(const int & type);
 
 protected:
     void paintGL() override;
