@@ -1,4 +1,4 @@
-#ifndef RENDERWIDGET_H
+﻿#ifndef RENDERWIDGET_H
 #define RENDERWIDGET_H
 
 #include <QVTKOpenGLNativeWidget.h>
@@ -7,7 +7,7 @@
 class InteractorStyle : public vtkInteractorStyleTrackballCamera
 {
 public:
-    static InteractorStyle * New();
+    static InteractorStyle *New();
     vtkTypeMacro(InteractorStyle, vtkInteractorStyleTrackballCamera);
 
     void OnMouseMove() override;
@@ -36,24 +36,24 @@ public:
     };
 
 public:
-    explicit RenderWidget(QWidget * parent = nullptr);
+    explicit RenderWidget(QWidget *parent = nullptr);
     ~RenderWidget() override;
 
-    void SetStyleState(const State & state);
-    QPainterPath GetCuttingPath() const;
+    void SetStyleState(const State &state);
+    QPolygonF GetCuttingPolygon() const;
 
 signals:
-    void SgnCuttingLine(const int & type);
+    void SgnCuttingLine(const int &type);
 
 protected:
     void paintGL() override;
-    void mousePressEvent(QMouseEvent * event) override;
-    void mouseReleaseEvent(QMouseEvent * event) override;
-    void mouseMoveEvent(QMouseEvent * event) override;
-    void wheelEvent(QWheelEvent * event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+    void mouseReleaseEvent(QMouseEvent *event) override;
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void wheelEvent(QWheelEvent *event) override;
 
 private:
-    void drawArea(QList<QPointF> & pf, QPainter & painter);
+    void drawArea(QList<QPointF> &pf, QPainter &painter);
 
 private:
     QList<QPointF> cutting_points_ = QList<QPointF>();

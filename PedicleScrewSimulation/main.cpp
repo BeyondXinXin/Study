@@ -19,7 +19,7 @@
 
 static bool ShowVtkDebugPolydata(vtkSmartPointer<vtkPolyData> surface);
 
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
     QApplication::setAttribute(Qt::AA_DontCheckOpenGLContextThreadAffinity);
     QGuiApplication::setAttribute(Qt::AA_EnableHighDpiScaling);

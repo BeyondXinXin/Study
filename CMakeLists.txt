@@ -5,7 +5,7 @@ include(cmake/clean-all.cmake)
 
 project(StudyVtk VERSION "0.0.0")
 
-list(APPEND CMAKE_PREFIX_PATH "C:/lib/vtk/bulid")
+list(APPEND CMAKE_PREFIX_PATH "E:/lib/vs2015_VTK_9.0.1_qt5.9/bulid")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG
     ${PROJECT_SOURCE_DIR}/bin/Debug)
@@ -30,6 +30,8 @@ add_subdirectory(Stl2Png)
 add_subdirectory(HighlightPicked)
 add_subdirectory(InteractSeparately)
 add_subdirectory(ScalpelCutting)
+add_subdirectory(EarthVolumeRendering)
+add_subdirectory(EarthTextureMap)
 
 add_custom_target(clean-all
    COMMAND ${CMAKE_BUILD_TOOL} clean

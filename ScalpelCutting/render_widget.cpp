@@ -1,4 +1,4 @@
-#include "render_widget.h"
+﻿#include "render_widget.h"
 
 #include <QDebug>
 #include <QMouseEvent>
@@ -74,7 +74,7 @@ void InteractorStyle::OnMouseWheelBackward()
 }
 
 //------------------------------------------------------
-RenderWidget::RenderWidget(QWidget * parent)
+RenderWidget::RenderWidget(QWidget *parent)
   : QVTKOpenGLNativeWidget(parent)
 {
     interactor()->SetInteractorStyle(style_);
@@ -84,7 +84,7 @@ RenderWidget::~RenderWidget()
 {
 }
 
-void RenderWidget::SetStyleState(const State & state)
+void RenderWidget::SetStyleState(const State &state)
 {
     switch (state) {
     case DrawCutLine: {
@@ -107,17 +107,18 @@ void RenderWidget::SetStyleState(const State & state)
     cutting_points_.clear();
 }
 
-QPainterPath RenderWidget::GetCuttingPath() const
+QPolygonF RenderWidget::GetCuttingPolygon() const
 {
     if (cutting_points_.length() < 1) {
-        return QPainterPath();
+        return QPolygonF();
     }
 
-    QPainterPath path(cutting_points_[0]);
-    for (int i = 1; i < cutting_points_.size(); ++i) {
-        path.lineTo(cutting_points_[i]);
+    QPolygonF polygon; //多边形
+    foreach (auto var, cutting_points_) {
+        polygon << QPointF(var.x(), height() - var.y());
+        qDebug() << QPointF(var.x(), height() - var.y());
     }
-    return path;
+    return polygon;
 }
 
 void RenderWidget::paintGL()
@@ -129,7 +130,7 @@ void RenderWidget::paintGL()
     }
 }
 
-void RenderWidget::mousePressEvent(QMouseEvent * event)
+void RenderWidget::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton && state_ == DrawCutLine) {
         leftbtn_drag_ = true;
@@ -138,7 +139,7 @@ void RenderWidget::mousePressEvent(QMouseEvent * event)
     QVTKOpenGLNativeWidget::mousePressEvent(event);
 }
 
-void RenderWidget::mouseReleaseEvent(QMouseEvent * event)
+void RenderWidget::mouseReleaseEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::LeftButton && state_ == DrawCutLine) {
         leftbtn_drag_ = false;
@@ -146,12 +147,12 @@ void RenderWidget::mouseReleaseEvent(QMouseEvent * event)
     QVTKOpenGLNativeWidget::mouseReleaseEvent(event);
 }
 
-void RenderWidget::wheelEvent(QWheelEvent * event)
+void RenderWidget::wheelEvent(QWheelEvent *event)
 {
     QVTKOpenGLNativeWidget::wheelEvent(event);
 }
 
-void RenderWidget::mouseMoveEvent(QMouseEvent * event)
+void RenderWidget::mouseMoveEvent(QMouseEvent *event)
 {
     if (leftbtn_drag_) {
         cutting_points_ << QPointF(event->x(), event->y());
@@ -160,7 +161,7 @@ void RenderWidget::mouseMoveEvent(QMouseEvent * event)
     QVTKOpenGLNativeWidget::mouseMoveEvent(event);
 }
 
-void RenderWidget::drawArea(QList<QPointF> & pf, QPainter & painter)
+void RenderWidget::drawArea(QList<QPointF> &pf, QPainter &painter)
 {
     if (pf.length() < 1) {
         return;
