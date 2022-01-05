@@ -1,0 +1,6 @@
+*.user
+Debug/
+
+Release/
+
+bulid/

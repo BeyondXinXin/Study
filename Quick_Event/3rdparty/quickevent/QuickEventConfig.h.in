@@ -1,0 +1,21 @@
+#ifndef INCLUDE_GUARD
+#define INCLUDE_GUARD
+
+#include <QtCore/qglobal.h>
+
+#define QuickEvent_NAME "QuickEvent"
+#define QuickEvent_VER "@quickevent_VERSION@"
+#define QuickEvent_YEARS "2020"
+#define QuickEvent_VER_MAJOR "@quickevent_VERSION_MAJOR@"
+#define QuickEvent_VER_MINOR "@quickevent_VERSION_MINOR@"
+#define QuickEvent_VER_PATCH "@quickevent_VERSION_PATCH@"
+
+#if defined(USE_SHARED)
+    #define LIBRARYSHARED_EXPORT Q_DECL_EXPORT
+#elif defined(USE_STATIC)
+    #define LIBRARYSHARED_EXPORT
+#else
+    #define LIBRARYSHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // INCLUDE_GUARD
