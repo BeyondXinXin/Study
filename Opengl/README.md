@@ -7,10 +7,11 @@
 
 ## 1 LearnOpenGL
 
-经典的入门教程，用QOpenGLWidget自己来重新实现一遍。
+准备边看教程边自己手打一份，直接看learnopengl他是用的glfw+glad，自己以后用不到。还是找个基于QOpenGLWidget帮助大一些。
 
 * 教程：[learnopengl-cn](https://learnopengl-cn.github.io/)
 * 视频：[阿西拜：OpenGL，Qt实现](https://www.bilibili.com/video/BV1UL411W71w)
+* 视频：[(收费)阿西拜：现代OpenGL，Qt实现](https://ke.qq.com/course/package/40726?flowToken=1041265)
 * 代码：[建波：OpenGLwithQtWidgets](https://github.com/gongjianbo/OpenGLwithQtWidgets)
 
 
