@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     GLWidget_1_2 wid_1_2;
     chap1.addTab(&wid_1_2, u8"创建三角形");
 
-    GLWidget_1_1 wid_1_3;
+    GLWidget_1_3 wid_1_3;
     chap1.addTab(&wid_1_3, u8"EBO");
 
     GLWidget_1_1 wid_1_4;
