@@ -30,20 +30,20 @@ https://itk.org/Doxygen/html/index.html  ITK  官方教程
 https://doc.qt.io/ qt 官方教程  
 
 ## 展示
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/001.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/002.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/003.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/004.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/005.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/006.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/007.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/008.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/009.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/010.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/011.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/012.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/013.png)
-![](https://gitee.com/yaoxin001/openBrowser/raw/master/preview_V0/014.png)
+![](001.png)
+![](002.png)
+![](003.png)
+![](004.png)
+![](005.png)
+![](006.png)
+![](007.png)
+![](008.png)
+![](009.png)
+![](010.png)
+![](011.png)
+![](012.png)
+![](013.png)
+![](014.png)
 
 
 ## 代码风格
