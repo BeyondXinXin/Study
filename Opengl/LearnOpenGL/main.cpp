@@ -1,7 +1,8 @@
 #include <QApplication>
 #include <QTabWidget>
 
-#include <chapter1/Chapter1>
+#include <class1/chapter1/Chapter1>
+#include <class1/chapter2/Chapter2>
 
 QTabWidget *GetClass1();
 QTabWidget *GetClass2();
@@ -30,10 +31,10 @@ int main(int argc, char *argv[])
 
 QTabWidget *GetClass1()
 {
-    QTabWidget *tab_class_1 = new QTabWidget();
+    QTabWidget *tab_class = new QTabWidget();
     // -------- 创建窗口 --------
     QTabWidget *chap1 = new QTabWidget();
-    tab_class_1->addTab(chap1, u8"1.1 创建窗口");
+    tab_class->addTab(chap1, u8"1.1 创建窗口");
     GLWidget_1_1 *wid_1_1 = new GLWidget_1_1();
     chap1->addTab(wid_1_1, u8"1 创建窗口");
     GLWidget_1_2 *wid_1_2 = new GLWidget_1_2();
@@ -44,26 +45,29 @@ QTabWidget *GetClass1()
     chap1->addTab(wid_1_4, u8"4 练习");
 
     QTabWidget *chap2 = new QTabWidget();
-    tab_class_1->addTab(chap2, u8"1.2 Qt交互与Shader");
+    tab_class->addTab(chap2, u8"1.2 Qt交互与Shader");
+    GLWidget_2_1 *wid_2_1 = new GLWidget_2_1();
+    chap2->addTab(wid_2_1, u8"1 UI调用OpenGL控件");
 
     QTabWidget *chap3 = new QTabWidget();
-    tab_class_1->addTab(chap3, u8"1.3 纹理");
+    tab_class->addTab(chap3, u8"1.3 纹理");
 
     QTabWidget *chap4 = new QTabWidget();
-    tab_class_1->addTab(chap4, u8"1.4 变换");
+    tab_class->addTab(chap4, u8"1.4 变换");
 
     QTabWidget *chap5 = new QTabWidget();
-    tab_class_1->addTab(chap5, u8"1.5 坐标系统");
+    tab_class->addTab(chap5, u8"1.5 坐标系统");
 
     QTabWidget *chap6 = new QTabWidget();
-    tab_class_1->addTab(chap6, u8"1.6 摄像机");
+    tab_class->addTab(chap6, u8"1.6 摄像机");
 
-    return tab_class_1;
+    return tab_class;
 }
 
 QTabWidget *GetClass2()
 {
     QTabWidget *tab_class = new QTabWidget();
+
     return tab_class;
 }
 
