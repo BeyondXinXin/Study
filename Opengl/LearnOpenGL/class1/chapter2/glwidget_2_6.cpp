@@ -1,15 +1,15 @@
 #include "GLWidget_2_6.h"
 
 static const float vertices[] = {
-    0.5f, 0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    -0.5f, 0.5f, 0.0f,
-    -0.5f, -0.5f, 0.0f
+    0.5f, 0.5f, 0.0f, 1.0f, 0.f, 0.f,
+    0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+    -0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
+    -0.5f, 0.5f, 0.0f, 0.5f, 0.5f, 0.5f
 };
 
 static const quint32 indices[] = {
     0, 1, 3,
-    0, 2, 3
+    1, 2, 3
 };
 
 GLWidget_2_6::GLWidget_2_6(QWidget *parent)
@@ -52,10 +52,6 @@ void GLWidget_2_6::initializeGL()
     }
     gl_shader_.bind();
 
-    //    quint32 pos_location = static_cast<quint32>(gl_shader_.attributeLocation("a_pos"));
-    quint32 pos_location = 10;
-    gl_shader_.bindAttributeLocation("a_pos", static_cast<qint32>(pos_location));
-
     // 顶点缓冲对象、顶点数组对象、索引缓冲对象
     glGenVertexArrays(1, &vao_);
     glGenBuffers(1, &vbo_);
@@ -63,8 +59,11 @@ void GLWidget_2_6::initializeGL()
     glBindVertexArray(vao_);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(pos_location, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void *>(nullptr));
-    glEnableVertexAttribArray(pos_location);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), static_cast<void *>(nullptr));
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), reinterpret_cast<GLvoid *>(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -76,6 +75,8 @@ void GLWidget_2_6::initializeGL()
     glBindVertexArray(0);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    gl_shader_.setUniformValue("off_set", .4f);
 }
 
 void GLWidget_2_6::resizeGL(int w, int h)
