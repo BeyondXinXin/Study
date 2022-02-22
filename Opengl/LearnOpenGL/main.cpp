@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     main_tab.addTab(GetClass4(), u8"4 高级OpenGL");
     main_tab.addTab(GetClass5(), u8"4 高级光照");
 
-    main_tab.resize(800, 600);
+    main_tab.resize(1800, 600);
     main_tab.setWindowTitle(u8"Learn OpenGL");
     main_tab.show();
 
@@ -47,7 +47,17 @@ QTabWidget *GetClass1()
     QTabWidget *chap2 = new QTabWidget();
     tab_class->addTab(chap2, u8"1.2 Qt交互与Shader");
     GLWidget_2_1 *wid_2_1 = new GLWidget_2_1();
-    chap2->addTab(wid_2_1, u8"1 UI调用OpenGL控件");
+    chap2->addTab(wid_2_1, u8"1 调用OpenGL控件");
+    GLWidget_2_2 *wid_2_2 = new GLWidget_2_2();
+    chap2->addTab(wid_2_2, u8"2 QOpenGLShaderProgram");
+    GLWidget_2_3 *wid_2_3 = new GLWidget_2_3();
+    chap2->addTab(wid_2_3, u8"3 GLSL_in_out");
+    GLWidget_2_4 *wid_2_4 = new GLWidget_2_4();
+    chap2->addTab(wid_2_4, u8"4 GLSL_layout");
+    GLWidget_2_5 *wid_2_5 = new GLWidget_2_5();
+    chap2->addTab(wid_2_5, u8"5 GLSL_uniform");
+    GLWidget_2_6 *wid_2_6 = new GLWidget_2_6();
+    chap2->addTab(wid_2_6, u8"6 test");
 
     QTabWidget *chap3 = new QTabWidget();
     tab_class->addTab(chap3, u8"1.3 纹理");

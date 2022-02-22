@@ -1,1 +1,6 @@
 ﻿#include "glwidget_2_1.h"
+#include "glwidget_2_2.h"
+#include "glwidget_2_3.h"
+#include "glwidget_2_4.h"
+#include "glwidget_2_5.h"
+#include "glwidget_2_6.h"

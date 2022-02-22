@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>shapes_2_2.frag</file>
+        <file>shapes_2_2.vert</file>
+        <file>shapes_2_3.frag</file>
+        <file>shapes_2_3.vert</file>
+        <file>shapes_2_4.frag</file>
+        <file>shapes_2_4.vert</file>
+        <file>shapes_2_5.frag</file>
+        <file>shapes_2_5.vert</file>
+        <file>shapes_2_6.frag</file>
+        <file>shapes_2_6.vert</file>
+    </qresource>
+</RCC>
