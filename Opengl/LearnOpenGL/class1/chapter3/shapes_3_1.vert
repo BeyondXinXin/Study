@@ -9,5 +9,5 @@ out vec2 text_cord;
 void main(void)
 {
     gl_Position = vec4(a_pos.x,a_pos.y,a_pos.z,1.0f);
-    text_cord = a_text_cord;
+    text_cord = vec2(1-a_text_cord.x,a_text_cord.y);
 }
