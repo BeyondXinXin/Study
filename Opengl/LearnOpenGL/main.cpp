@@ -5,6 +5,7 @@
 #include <class1/chapter2/Chapter2>
 #include <class1/chapter3/Chapter3>
 #include <class1/chapter4/Chapter4>
+#include <class1/chapter5/Chapter5>
 
 QTabWidget *GetClass1();
 QTabWidget *GetClass2();
@@ -24,7 +25,7 @@ int main(int argc, char *argv[])
     main_tab.addTab(GetClass4(), u8"4 高级OpenGL");
     main_tab.addTab(GetClass5(), u8"4 高级光照");
 
-    int i = 0, j = 3, k = 0;
+    int i = 0, j = 4, k = 0;
     main_tab.setCurrentIndex(i);
     auto cur_chapter_wid = qobject_cast<QTabWidget *>(main_tab.currentWidget());
     cur_chapter_wid->setCurrentIndex(j);
@@ -84,6 +85,8 @@ QTabWidget *GetClass1()
 
     QTabWidget *chap5 = new QTabWidget();
     tab_class->addTab(chap5, u8"1.5 坐标系统");
+    GLWidget_5_1 *wid_5_1 = new GLWidget_5_1();
+    chap5->addTab(wid_5_1, u8"1 3D");
 
     QTabWidget *chap6 = new QTabWidget();
     tab_class->addTab(chap6, u8"1.6 摄像机");
