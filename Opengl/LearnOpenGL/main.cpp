@@ -3,6 +3,7 @@
 
 #include <class1/chapter1/Chapter1>
 #include <class1/chapter2/Chapter2>
+#include <class1/chapter3/Chapter3>
 
 QTabWidget *GetClass1();
 QTabWidget *GetClass2();
@@ -21,6 +22,13 @@ int main(int argc, char *argv[])
     main_tab.addTab(GetClass3(), u8"3 模型加载");
     main_tab.addTab(GetClass4(), u8"4 高级OpenGL");
     main_tab.addTab(GetClass5(), u8"4 高级光照");
+
+    int i = 0, j = 2, k = 1;
+    main_tab.setCurrentIndex(i);
+    auto cur_chapter_wid = qobject_cast<QTabWidget *>(main_tab.currentWidget());
+    cur_chapter_wid->setCurrentIndex(j);
+    auto cur_wid = qobject_cast<QTabWidget *>(cur_chapter_wid->currentWidget());
+    cur_wid->setCurrentIndex(k);
 
     main_tab.resize(1800, 600);
     main_tab.setWindowTitle(u8"Learn OpenGL");
@@ -61,6 +69,16 @@ QTabWidget *GetClass1()
 
     QTabWidget *chap3 = new QTabWidget();
     tab_class->addTab(chap3, u8"1.3 纹理");
+    GLWidget_3_1 *wid_3_1 = new GLWidget_3_1();
+    chap3->addTab(wid_3_1, u8"1 加载纹理、纹理单元");
+    GLWidget_3_2 *wid_3_2 = new GLWidget_3_2();
+    chap3->addTab(wid_3_2, u8"2 环绕方式");
+    GLWidget_3_3 *wid_3_3 = new GLWidget_3_3();
+    chap3->addTab(wid_3_3, u8"3 纹理过滤");
+    GLWidget_3_4 *wid_3_4 = new GLWidget_3_4();
+    chap3->addTab(wid_3_4, u8"4 多级渐远纹理");
+    GLWidget_3_5 *wid_3_5 = new GLWidget_3_5();
+    chap3->addTab(wid_3_5, u8"5 练习");
 
     QTabWidget *chap4 = new QTabWidget();
     tab_class->addTab(chap4, u8"1.4 变换");
