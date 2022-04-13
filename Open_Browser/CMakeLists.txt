@@ -47,6 +47,14 @@ configure_file(
 
 
 
+list(APPEND CMAKE_PREFIX_PATH "C:/Qt/5.9.7/5.9.7/msvc2015_64/lib/cmake/Qt5")
+list(APPEND CMAKE_PREFIX_PATH "C:/Qt/5.9.7/5.9.7/msvc2015_64/lib/cmake/Qt5LinguistTools")
+list(APPEND CMAKE_PREFIX_PATH "D:/lib/third-party")
+list(APPEND CMAKE_MODULE_PATH "D:/lib/third-party/cmake")
+list(APPEND CMAKE_PREFIX_PATH "D:/lib/opencv/build")
+list(APPEND CMAKE_PREFIX_PATH "C:/lib/ThirdParty")
+list(APPEND CMAKE_MODULE_PATH "C:/lib/ThirdParty/cmake")
+list(APPEND CMAKE_PREFIX_PATH "C:/lib/opencv/build")
 
 
 
@@ -100,8 +108,8 @@ find_package(ITK REQUIRED)
 include(${ITK_USE_FILE})
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS} )
-find_package(CGAL REQUIRED)
-include(${CGAL_USE_FILE})
+#find_package(CGAL REQUIRED)
+#include(${CGAL_USE_FILE})
 find_package(Eigen3 REQUIRED)
 include( ${EIGEN3_USE_FILE} )
 # ----------------------------------------------------
@@ -281,12 +289,12 @@ set(04Widget
     Source/04Widget/CustomControl/NetCom/frmudpserver.ui
     )
 set(06Test
-    Source/06Test/MinPath/minimalpathextraction.h
-    Source/06Test/MinPath/custom_item.h
-    Source/06Test/MinPath/custom_item.cpp
-    Source/06Test/MinPath/mainwindow.h
-    Source/06Test/MinPath/mainwindow.cpp
-    Source/06Test/MinPath/mainwindow.ui
+#    Source/06Test/MinPath/minimalpathextraction.h
+#    Source/06Test/MinPath/custom_item.h
+#    Source/06Test/MinPath/custom_item.cpp
+#    Source/06Test/MinPath/mainwindow.h
+#    Source/06Test/MinPath/mainwindow.cpp
+#    Source/06Test/MinPath/mainwindow.ui
     Source/06Test/EdgeAdjustment/formedgeadjustment.h
     Source/06Test/EdgeAdjustment/formedgeadjustment.cpp
     Source/06Test/EdgeAdjustment/formedgeadjustment.ui

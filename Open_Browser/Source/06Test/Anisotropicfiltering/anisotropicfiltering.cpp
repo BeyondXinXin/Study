@@ -1,17 +1,17 @@
-#include "anisotropicfiltering.h"
-
+﻿#include "anisotropicfiltering.h"
 
 float AnisotropicFiltering::k_ = 20;
 float AnisotropicFiltering::lambda_ = 0.25;
 qint32 AnisotropicFiltering::n_ = 20;
 
-void AnisotropicFiltering::run() {
+void AnisotropicFiltering::run()
+{
     Mat src = imread("/home/yc/Pictures/png影像测试/jizuobiao.png");
     if (src.empty()) {
         printf("could not load image...\n");
-        return ;
+        return;
     }
-    namedWindow("input image", CV_WINDOW_AUTOSIZE);
+    //    namedWindow("input image", CV_WINDOW_AUTOSIZE);
     imshow("input image", src);
     vector<Mat> mv;
     vector<Mat> results;
@@ -44,11 +44,11 @@ void AnisotropicFiltering::run() {
     imshow("result", dst);
     imwrite("/home/yc/Pictures/png影像测试/jizuobiao1.png", dst);
     waitKey(0);
-    return ;
-
+    return;
 }
 
-void AnisotropicFiltering::anisotropy_demo(Mat &image, Mat &result) {
+void AnisotropicFiltering::anisotropy_demo(Mat &image, Mat &result)
+{
     int width = image.cols;
     int height = image.rows;
     // 四邻域梯度
@@ -68,8 +68,7 @@ void AnisotropicFiltering::anisotropy_demo(Mat &image, Mat &result) {
             ec = exp(-e * e / k2);
             wc = exp(-w * w / k2);
             result.at<float>(row, col) =
-                image.at<float>(row, col) + lambda_ * (n * nc + s * sc + e * ec + w * wc);
+              image.at<float>(row, col) + lambda_ * (n * nc + s * sc + e * ec + w * wc);
         }
     }
-
 }

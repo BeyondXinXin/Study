@@ -1,17 +1,18 @@
-// 01 Frame includes
-#include "quihelper.h"
-#include "quiapplication.h"
+﻿// 01 Frame includes
 #include "commandlinemanager.h"
 #include "openbrowserapplication.h"
+#include "quiapplication.h"
+#include "quihelper.h"
 
 // VTK includes
-#include <vtkOutputWindow.h>
 #include <QVTKOpenGLWidget.h>
 #include <vtkOpenGLRenderWindow.h>
+#include <vtkOutputWindow.h>
 
+#include "qopencvwidget.h"
 
-
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     // 主线程名称
     QThread::currentThread()->setObjectName("Main Thread");
 
@@ -30,15 +31,23 @@ int main(int argc, char *argv[]) {
         return 0;
     }
 
-    // 命令行参数设置
-    CommandLineManager::Initial(a);
+    QOpencvScene opencv_scene_;
+    QOpencvView graphicsView;
+    QOpencvPixmapItem opencv_pixmap_;
+    opencv_scene_.addItem(&opencv_pixmap_);
+    graphicsView.setScene(&opencv_scene_);
+    opencv_pixmap_.setPixmap(QPixmap("C:\\Users\\Administrator\\Pictures\\视频项目\\288.png"));
+    graphicsView.setDragMode(QGraphicsView::ScrollHandDrag);
+    graphicsView.show();
 
-    // 启动主程序
-    openBrowserApplication openBrowser_application;
-    if (openBrowser_application.Run()) {
-    } else {
-        return 0;
-    }
+    //    // 命令行参数设置
+    //    CommandLineManager::Initial(a);
+
+    //    // 启动主程序
+    //    openBrowserApplication openBrowser_application;
+    //    if (openBrowser_application.Run()) {
+    //    } else {
+    //        return 0;
+    //    }
     return a.exec();
 }
-

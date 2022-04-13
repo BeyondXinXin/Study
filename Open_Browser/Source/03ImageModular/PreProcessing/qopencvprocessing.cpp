@@ -7,7 +7,8 @@ using namespace cv;
 using namespace std;
 
 QScopedPointer<QOpencvProcessing> QOpencvProcessing::self;
-QOpencvProcessing *QOpencvProcessing::Instance() {
+QOpencvProcessing *QOpencvProcessing::Instance()
+{
     if (self.isNull()) {
         QMutex mutex;
         QMutexLocker locker(&mutex);
@@ -17,36 +18,39 @@ QOpencvProcessing *QOpencvProcessing::Instance() {
     }
     return self.data();
 }
-QOpencvProcessing::QOpencvProcessing() {
+QOpencvProcessing::QOpencvProcessing()
+{
 }
 
-QOpencvProcessing::~QOpencvProcessing() {
+QOpencvProcessing::~QOpencvProcessing()
+{
 }
 
 // 图像转换
 
-QImage QOpencvProcessing::cvMat2QImage(const Mat &mat) {  // Mat 改成 QImage
-    if (mat.type() == CV_8UC1) {				// 单通道
+QImage QOpencvProcessing::cvMat2QImage(const Mat &mat)
+{ // Mat 改成 QImage
+    if (mat.type() == CV_8UC1) { // 单通道
         QImage image(mat.cols, mat.rows, QImage::Format_Indexed8);
-        image.setColorCount(256);				// 灰度级数256
+        image.setColorCount(256); // 灰度级数256
         for (int i = 0; i < 256; i++) {
             image.setColor(i, qRgb(i, i, i));
         }
-        uchar *pSrc = mat.data;					// 复制mat数据
+        uchar *pSrc = mat.data; // 复制mat数据
         for (int row = 0; row < mat.rows; row++) {
             uchar *pDest = image.scanLine(row);
             memcpy(pDest, pSrc, static_cast<unsigned long>(mat.cols));
             pSrc += static_cast<long>(mat.step);
         }
         return image;
-    } else if (mat.type() == CV_8UC3) {			// 3通道
-        const uchar *pSrc = const_cast<const uchar *>(mat.data);			// 复制像素
+    } else if (mat.type() == CV_8UC3) { // 3通道
+        const uchar *pSrc = const_cast<const uchar *>(mat.data); // 复制像素
         QImage image(pSrc, mat.cols, mat.rows,
                      static_cast<int>(mat.step), QImage::Format_RGB888);
         // R, G, B 对应 0,1,2
-        return image.rgbSwapped();				// rgbSwapped是为了显示效果色彩好一些。
+        return image.rgbSwapped(); // rgbSwapped是为了显示效果色彩好一些。
     } else if (mat.type() == CV_8UC4) {
-        const uchar *pSrc = const_cast<const uchar *>(mat.data);			// 复制像素
+        const uchar *pSrc = const_cast<const uchar *>(mat.data); // 复制像素
         // Create QImage with same dimensions as input Mat
         QImage image(pSrc, mat.cols, mat.rows,
                      static_cast<int>(mat.step), QImage::Format_ARGB32);
@@ -57,33 +61,32 @@ QImage QOpencvProcessing::cvMat2QImage(const Mat &mat) {  // Mat 改成 QImage
     }
 }
 
-Mat QOpencvProcessing::QImage2cvMat(QImage image) {		// QImage改成Mat
+Mat QOpencvProcessing::QImage2cvMat(QImage image)
+{ // QImage改成Mat
     Mat mat;
-    switch (image.format()) {
-        case QImage::Format_ARGB32:
-        case QImage::Format_RGB32:
-        case QImage::Format_ARGB32_Premultiplied:
-            mat = Mat(image.height(), image.width(), CV_8UC4,
-                      (void *)image.constBits(), static_cast<unsigned long>(
-                          image.bytesPerLine()));
-            break;
-        case QImage::Format_RGB888:
-            mat = Mat(image.height(), image.width(), CV_8UC3,
-                      (void *)image.constBits(), static_cast<unsigned long>(
-                          image.bytesPerLine()));
-            cv::cvtColor(mat, mat, CV_BGR2RGB);
-            break;
-        case QImage::Format_Indexed8:
-        case QImage::Format_Grayscale8:
-            mat = Mat(image.height(), image.width(), CV_8UC1,
-                      (void *)image.constBits(), static_cast<unsigned long>(
-                          image.bytesPerLine()));
-            break;
-    }
+    //    switch (image.format()) {
+    //    case QImage::Format_ARGB32:
+    //    case QImage::Format_RGB32:
+    //    case QImage::Format_ARGB32_Premultiplied:
+    //        mat = Mat(image.height(), image.width(), CV_8UC4,
+    //                  (void *)image.constBits(), static_cast<unsigned long>(image.bytesPerLine()));
+    //        break;
+    //    case QImage::Format_RGB888:
+    //        mat = Mat(image.height(), image.width(), CV_8UC3,
+    //                  (void *)image.constBits(), static_cast<unsigned long>(image.bytesPerLine()));
+    //        cv::cvtColor(mat, mat, CV_BGR2RGB);
+    //        break;
+    //    case QImage::Format_Indexed8:
+    //    case QImage::Format_Grayscale8:
+    //        mat = Mat(image.height(), image.width(), CV_8UC1,
+    //                  (void *)image.constBits(), static_cast<unsigned long>(image.bytesPerLine()));
+    //        break;
+    //    }
     return mat;
 }
 
-QImage QOpencvProcessing::splitBGR(QImage src, int color) {		// 提取RGB分量
+QImage QOpencvProcessing::splitBGR(QImage src, int color)
+{ // 提取RGB分量
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
     if (srcImg.channels() == 1) {
@@ -95,7 +98,7 @@ QImage QOpencvProcessing::splitBGR(QImage src, int color) {		// 提取RGB分量
     } else {
         vector<Mat> m;
         split(srcImg, m);
-        vector<Mat>Rchannels, Gchannels, Bchannels;
+        vector<Mat> Rchannels, Gchannels, Bchannels;
         split(srcImg, Rchannels);
         split(srcImg, Gchannels);
         split(srcImg, Bchannels);
@@ -108,14 +111,15 @@ QImage QOpencvProcessing::splitBGR(QImage src, int color) {		// 提取RGB分量
         merge(Rchannels, m[0]);
         merge(Gchannels, m[1]);
         merge(Bchannels, m[2]);
-        dstImg = m[static_cast<unsigned long>(color)];		// 分别对应B、G、R
+        dstImg = m[static_cast<unsigned long>(color)]; // 分别对应B、G、R
         QImage dst = cvMat2QImage(dstImg);
         return dst;
     }
 }
 
 QImage QOpencvProcessing::splitColor(
-    QImage src, String model, int color) {	// 提取分量
+  QImage src, String model, int color)
+{ // 提取分量
     if (model == "RGB") {
         Mat srcImg, dstImg;
         srcImg = QImage2cvMat(src);
@@ -128,7 +132,7 @@ QImage QOpencvProcessing::splitColor(
         } else {
             vector<Mat> m;
             split(srcImg, m);
-            vector<Mat>Rchannels, Gchannels, Bchannels;
+            vector<Mat> Rchannels, Gchannels, Bchannels;
             split(srcImg, Rchannels);
             split(srcImg, Gchannels);
             split(srcImg, Bchannels);
@@ -141,7 +145,7 @@ QImage QOpencvProcessing::splitColor(
             merge(Rchannels, m[0]);
             merge(Gchannels, m[1]);
             merge(Bchannels, m[2]);
-            dstImg = m[static_cast<unsigned long>(color)];		// 分别对应B、G、R
+            dstImg = m[static_cast<unsigned long>(color)]; // 分别对应B、G、R
             QImage dst = cvMat2QImage(dstImg);
             return dst;
         }
@@ -152,13 +156,13 @@ QImage QOpencvProcessing::splitColor(
             QUIHelper::ShowMessageBoxError("该图像为灰度图像。");
             return src;
         } else {
-            vector <Mat> vecRGB, vecHsv, vecHls, vecYuv;
+            vector<Mat> vecRGB, vecHsv, vecHls, vecYuv;
             img_hsv.create(img.rows, img.cols, CV_8UC3);
             img_hls.create(img.rows, img.cols, CV_8UC3);
-            cvtColor(img, img_rgb, CV_BGR2RGB);
-            cvtColor(img, img_hsv, CV_BGR2HSV);
-            cvtColor(img, img_hls, CV_BGR2HLS);
-            cvtColor(img, img_yuv, CV_BGR2YUV);
+            //            cvtColor(img, img_rgb, CV_BGR2RGB);
+            //            cvtColor(img, img_hsv, CV_BGR2HSV);
+            //            cvtColor(img, img_hls, CV_BGR2HLS);
+            //            cvtColor(img, img_yuv, CV_BGR2YUV);
             split(img_rgb, vecRGB);
             split(img_hsv, vecHsv);
             split(img_hls, vecHls);
@@ -180,39 +184,37 @@ QImage QOpencvProcessing::splitColor(
     }
 }
 
-
 // 图像几何变换
 
-void QOpencvProcessing::Resize(QImage &src, int length, int width) {
+void QOpencvProcessing::Resize(QImage &src, int length, int width)
+{
     // 改变大小
     Mat matSrc, matDst;
     matSrc = QImage2cvMat(src);
-    resize(matSrc, matDst, Size(length, width), 0, 0, CV_INTER_LINEAR);// 线性插值
+    //    resize(matSrc, matDst, Size(length, width), 0, 0, CV_INTER_LINEAR); // 线性插值
     src = cvMat2QImage(matDst);
 }
 
-void QOpencvProcessing::Enlarge_Reduce(QImage &src, int times) {
+void QOpencvProcessing::Enlarge_Reduce(QImage &src, int times)
+{
     // 缩放
     Mat matSrc, matDst;
     matSrc = QImage2cvMat(src);
     if (times > 0) {
-        resize(matSrc, matDst, Size(matSrc.cols * abs(times + 1),
-                                    matSrc.rows * abs(times + 1))
-               , 0, 0, INTER_LINEAR);
+        resize(matSrc, matDst, Size(matSrc.cols * abs(times + 1), matSrc.rows * abs(times + 1)), 0, 0, INTER_LINEAR);
         src = cvMat2QImage(matDst);
-        return ;
+        return;
     } else if (times < 0) {
-        resize(matSrc, matDst, Size(matSrc.cols / abs(times - 1),
-                                    matSrc.rows / abs(times - 1))
-               , 0, 0, INTER_AREA);
+        resize(matSrc, matDst, Size(matSrc.cols / abs(times - 1), matSrc.rows / abs(times - 1)), 0, 0, INTER_AREA);
         src = cvMat2QImage(matDst);
-        return ;
+        return;
     } else {
-        return ;
+        return;
     }
 }
 
-void QOpencvProcessing::Rotate(QImage &src, int angle) {
+void QOpencvProcessing::Rotate(QImage &src, int angle)
+{
     // 旋转
     Mat matSrc, matDst, M;
     matSrc = QImage2cvMat(src);
@@ -224,20 +226,22 @@ void QOpencvProcessing::Rotate(QImage &src, int angle) {
     rot.at<double>(1, 2) += bbox.height / 2.0 - static_cast<double>(center.y);
     cv::warpAffine(matSrc, matDst, rot, bbox.size());
     src = cvMat2QImage(matDst);
-    return ;
+    return;
 }
 
-void QOpencvProcessing::Rotate_fixed(QImage &src, int angle) {
+void QOpencvProcessing::Rotate_fixed(QImage &src, int angle)
+{
     // 旋转90，180，270
     Mat matSrc, matDst, M;
     matSrc = QImage2cvMat(src);
     M = getRotationMatrix2D(Point2i(matSrc.cols / 2, matSrc.rows / 2), angle, 1);
     warpAffine(matSrc, matDst, M, Size(matSrc.cols, matSrc.rows));
     src = cvMat2QImage(matDst);
-    return ;
+    return;
 }
 
-void QOpencvProcessing::Flip(QImage &src, int flipcode) {
+void QOpencvProcessing::Flip(QImage &src, int flipcode)
+{
     // 镜像
     Mat matSrc, matDst;
     matSrc = QImage2cvMat(src);
@@ -245,23 +249,23 @@ void QOpencvProcessing::Flip(QImage &src, int flipcode) {
     // flipCode==0 垂直翻转（沿X轴翻转）,flipCode>0 水平翻转（沿Y轴翻转）
     // flipCode<0 水平垂直翻转（先沿X轴翻转，再沿Y轴翻转，等价于旋转180°）
     src = cvMat2QImage(matDst);
-    return ;
+    return;
 }
 
-void QOpencvProcessing::Lean(QImage &src, int x, int y) {
+void QOpencvProcessing::Lean(QImage &src, int x, int y)
+{
     // 倾斜
     Mat matSrc, matTmp, matDst;
     matSrc = QImage2cvMat(src);
     matTmp = Mat::zeros(matSrc.rows, matSrc.cols, matSrc.type());
     Mat map_x, map_y;
     Point2f src_point[3], tmp_point[3], x_point[3], y_point[3];
-    double angleX = x / 180.0 * CV_PI ;
+    double angleX = x / 180.0 * CV_PI;
     double angleY = y / 180.0 * CV_PI;
     src_point[0] = Point2f(0, 0);
     src_point[1] = Point2f(matSrc.cols, 0);
     src_point[2] = Point2f(0, matSrc.rows);
-    x_point[0] = Point2f(static_cast<float>(matSrc.rows) *
-                         static_cast<float>(tan(angleX)), 0);
+    x_point[0] = Point2f(static_cast<float>(matSrc.rows) * static_cast<float>(tan(angleX)), 0);
     x_point[1] = Point2f(static_cast<int>(matSrc.cols + matSrc.rows * tan(angleX)), 0);
     x_point[2] = Point2f(0, matSrc.rows);
     map_x = getAffineTransform(src_point, x_point);
@@ -276,15 +280,14 @@ void QOpencvProcessing::Lean(QImage &src, int x, int y) {
     y_point[2] = Point2f(0, matTmp.rows);
     map_y = getAffineTransform(tmp_point, y_point);
     warpAffine(matTmp, matDst, map_y,
-               Size(matTmp.cols, static_cast<int>
-                    (matTmp.rows + matTmp.cols * tan(angleY))));
+               Size(matTmp.cols, static_cast<int>(matTmp.rows + matTmp.cols * tan(angleY))));
     src = cvMat2QImage(matDst);
-    return ;
+    return;
 }
 
-
 // 图像增强
-QImage QOpencvProcessing::Normalized(QImage src, int kernel_length) {
+QImage QOpencvProcessing::Normalized(QImage src, int kernel_length)
+{
     // 简单滤波
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -292,7 +295,8 @@ QImage QOpencvProcessing::Normalized(QImage src, int kernel_length) {
     return cvMat2QImage(dstImg);
 }
 
-QImage QOpencvProcessing::Gaussian(QImage src, int kernel_length) {
+QImage QOpencvProcessing::Gaussian(QImage src, int kernel_length)
+{
     // 高斯滤波
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -300,7 +304,8 @@ QImage QOpencvProcessing::Gaussian(QImage src, int kernel_length) {
     return cvMat2QImage(dstImg);
 }
 
-QImage QOpencvProcessing::Median(QImage src, int kernel_length) {
+QImage QOpencvProcessing::Median(QImage src, int kernel_length)
+{
     // 中值滤波
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -309,13 +314,14 @@ QImage QOpencvProcessing::Median(QImage src, int kernel_length) {
 }
 
 QImage QOpencvProcessing::HoughLine(
-    QImage src, int threshold, double minLineLength, double maxLineGap) {
+  QImage src, int threshold, double minLineLength, double maxLineGap)
+{
     // 线检测
     Mat srcImg, dstImg, cdstPImg;
     srcImg = QImage2cvMat(src);
-    cv::Canny(srcImg, dstImg, 50, 200, 3);             // Canny算子边缘检测
+    cv::Canny(srcImg, dstImg, 50, 200, 3); // Canny算子边缘检测
     if (srcImg.channels() != 1) {
-        cvtColor(dstImg, cdstPImg, COLOR_GRAY2BGR);    // 转换灰度图像
+        cvtColor(dstImg, cdstPImg, COLOR_GRAY2BGR); // 转换灰度图像
     } else {
         cdstPImg = srcImg;
     }
@@ -330,7 +336,8 @@ QImage QOpencvProcessing::HoughLine(
     return cvMat2QImage(cdstPImg);
 }
 
-QImage QOpencvProcessing::HoughCircle(QImage src, int minRadius, int maxRadius) {
+QImage QOpencvProcessing::HoughCircle(QImage src, int minRadius, int maxRadius)
+{
     // 圆检测
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -340,7 +347,7 @@ QImage QOpencvProcessing::HoughCircle(QImage src, int minRadius, int maxRadius) 
     } else {
         gray = srcImg;
     }
-    medianBlur(gray, gray, 5);              // 中值滤波，滤除噪声，避免错误检测
+    medianBlur(gray, gray, 5); // 中值滤波，滤除噪声，避免错误检测
     vector<Vec3f> circles;
     HoughCircles(gray, circles, HOUGH_GRADIENT, 1,
                  gray.rows / 16, 100, 30, minRadius, maxRadius);
@@ -358,50 +365,53 @@ QImage QOpencvProcessing::HoughCircle(QImage src, int minRadius, int maxRadius) 
     return dst;
 }
 
-QImage QOpencvProcessing::Sobel(QImage src, int kernel_length) {
+QImage QOpencvProcessing::Sobel(QImage src, int kernel_length)
+{
     // sobel
     Mat srcImg, dstImg, src_gray;
     srcImg = QImage2cvMat(src);
-    GaussianBlur(srcImg, srcImg, Size(3, 3), 0, 0, BORDER_DEFAULT);     // 高斯模糊
+    GaussianBlur(srcImg, srcImg, Size(3, 3), 0, 0, BORDER_DEFAULT); // 高斯模糊
     if (srcImg.channels() != 1) {
-        cvtColor(srcImg, src_gray, COLOR_BGR2GRAY);    // 转换灰度图像
+        cvtColor(srcImg, src_gray, COLOR_BGR2GRAY); // 转换灰度图像
     } else {
         src_gray = srcImg;
     }
     Mat grad_x, grad_y, abs_grad_x, abs_grad_y;
     cv::Sobel(src_gray, grad_x, CV_16S, 1, 0, kernel_length, 1, 0, BORDER_DEFAULT);
     cv::Sobel(src_gray, grad_y, CV_16S, 0, 1, kernel_length, 1, 0, BORDER_DEFAULT);
-    convertScaleAbs(grad_x, abs_grad_x);            // 缩放，计算绝对值，并将结果转换为8位
+    convertScaleAbs(grad_x, abs_grad_x); // 缩放，计算绝对值，并将结果转换为8位
     convertScaleAbs(grad_y, abs_grad_y);
     addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, dstImg);
     QImage dst = cvMat2QImage(dstImg);
     return dst;
 }
 
-QImage QOpencvProcessing::Laplacian(QImage src, int kernel_length) {
+QImage QOpencvProcessing::Laplacian(QImage src, int kernel_length)
+{
     // laplacian
     Mat srcImg, dstImg, src_gray;
     srcImg = QImage2cvMat(src);
-    GaussianBlur(srcImg, srcImg, Size(3, 3), 0, 0, BORDER_DEFAULT);       // 高斯模糊
+    GaussianBlur(srcImg, srcImg, Size(3, 3), 0, 0, BORDER_DEFAULT); // 高斯模糊
     if (srcImg.channels() != 1) {
-        cvtColor(srcImg, src_gray, COLOR_BGR2GRAY);    // 转换灰度图像
+        cvtColor(srcImg, src_gray, COLOR_BGR2GRAY); // 转换灰度图像
     } else {
         src_gray = srcImg;
     }
-    Mat abs_dst;                                                    // 拉普拉斯二阶导数
+    Mat abs_dst; // 拉普拉斯二阶导数
     cv::Laplacian(src_gray, dstImg, CV_16S, kernel_length, 1, 0, BORDER_DEFAULT);
-    convertScaleAbs(dstImg, dstImg);                                  // 绝对值8位
+    convertScaleAbs(dstImg, dstImg); // 绝对值8位
     QImage dst = cvMat2QImage(dstImg);
     return dst;
 }
 
-QImage QOpencvProcessing::Canny(QImage src, int kernel_length, int lowThreshold) {
+QImage QOpencvProcessing::Canny(QImage src, int kernel_length, int lowThreshold)
+{
     // canny
     Mat srcImg, dstImg, src_gray, detected_edges;
     srcImg = QImage2cvMat(src);
     dstImg.create(srcImg.size(), srcImg.type());
     if (srcImg.channels() != 1) {
-        cvtColor(srcImg, src_gray, COLOR_BGR2GRAY);    // 转换灰度图像
+        cvtColor(srcImg, src_gray, COLOR_BGR2GRAY); // 转换灰度图像
     } else {
         src_gray = srcImg;
     }
@@ -415,7 +425,8 @@ QImage QOpencvProcessing::Canny(QImage src, int kernel_length, int lowThreshold)
     return dst;
 }
 
-bool QOpencvProcessing::IsBin(Mat &image) {
+bool QOpencvProcessing::IsBin(Mat &image)
+{
     int w = image.cols;
     int h = image.rows;
     for (int row = 0; row < h; row++) {
@@ -431,11 +442,12 @@ bool QOpencvProcessing::IsBin(Mat &image) {
     return true;
 }
 
-void QOpencvProcessing::BinToGraylevel(Mat &image) {
+void QOpencvProcessing::BinToGraylevel(Mat &image)
+{
     int w = image.cols;
     int h = image.rows;
     for (int row = 0; row < h; row++) {
-        uchar *uc_pixel = image.data +  static_cast<unsigned long>(row) * image.step;
+        uchar *uc_pixel = image.data + static_cast<unsigned long>(row) * image.step;
         for (int col = 0; col < w; col++) {
             if (uc_pixel[0] <= 20) {
                 uc_pixel[0] = 50;
@@ -450,36 +462,39 @@ void QOpencvProcessing::BinToGraylevel(Mat &image) {
 
 // 灰度变化
 
-QImage QOpencvProcessing::Bin(QImage src, int threshold) {		// 二值化
+QImage QOpencvProcessing::Bin(QImage src, int threshold)
+{ // 二值化
     Mat srcImg, dstImg, grayImg;
-    srcImg = QImage2cvMat(src);
-    if (srcImg.channels() != 1) {
-        cvtColor(srcImg, grayImg, CV_BGR2GRAY);
-    } else {
-        dstImg = srcImg.clone();
-    }
-    cv::threshold(grayImg, dstImg, threshold, 255, THRESH_BINARY);
+    //    srcImg = QImage2cvMat(src);
+    //    if (srcImg.channels() != 1) {
+    //        cvtColor(srcImg, grayImg, CV_BGR2GRAY);
+    //    } else {
+    //        dstImg = srcImg.clone();
+    //    }
+    //    cv::threshold(grayImg, dstImg, threshold, 255, THRESH_BINARY);
     QImage dst = cvMat2QImage(dstImg);
     return dst;
 }
 
-QImage QOpencvProcessing::Graylevel(QImage src) {				// 灰度图像
+QImage QOpencvProcessing::Graylevel(QImage src)
+{ // 灰度图像
     Mat srcImg, dstImg;
-    srcImg = QImage2cvMat(src);
-    dstImg.create(srcImg.size(), srcImg.type());
-    if (srcImg.channels() != 1) {
-        cvtColor(srcImg, dstImg, CV_BGR2GRAY);
-    } else {
-        dstImg = srcImg.clone();
-    }
-    if (IsBin(dstImg)) {
-        BinToGraylevel(dstImg);
-    }
+    //    srcImg = QImage2cvMat(src);
+    //    dstImg.create(srcImg.size(), srcImg.type());
+    //    if (srcImg.channels() != 1) {
+    //        cvtColor(srcImg, dstImg, CV_BGR2GRAY);
+    //    } else {
+    //        dstImg = srcImg.clone();
+    //    }
+    //    if (IsBin(dstImg)) {
+    //        BinToGraylevel(dstImg);
+    //    }
     QImage dst = cvMat2QImage(dstImg);
     return dst;
 }
 
-QImage QOpencvProcessing::Reverse(QImage src) {
+QImage QOpencvProcessing::Reverse(QImage src)
+{
     // 图像反转
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -489,7 +504,8 @@ QImage QOpencvProcessing::Reverse(QImage src) {
     return dst;
 }
 
-QImage QOpencvProcessing::Linear(QImage src, int alpha, int beta) {
+QImage QOpencvProcessing::Linear(QImage src, int alpha, int beta)
+{
     // 线性变换
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -499,7 +515,8 @@ QImage QOpencvProcessing::Linear(QImage src, int alpha, int beta) {
     return dst;
 }
 
-QImage QOpencvProcessing::Gamma(QImage src, int gamma) {
+QImage QOpencvProcessing::Gamma(QImage src, int gamma)
+{
     // 伽马变换(指数变换)
     if (gamma < 0) {
         return src;
@@ -519,7 +536,8 @@ QImage QOpencvProcessing::Gamma(QImage src, int gamma) {
     return dst;
 }
 
-QImage QOpencvProcessing::Log(QImage src, int c) {
+QImage QOpencvProcessing::Log(QImage src, int c)
+{
     // 对数变换
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -536,16 +554,17 @@ QImage QOpencvProcessing::Log(QImage src, int c) {
     return dst;
 }
 
-QImage QOpencvProcessing::Histeq(QImage src) {
+QImage QOpencvProcessing::Histeq(QImage src)
+{
     // 直方图均衡化
     Mat srcImg, dstImg;
-    srcImg = QImage2cvMat(src);
-    if (srcImg.channels() != 1) {
-        cvtColor(srcImg, srcImg, CV_BGR2GRAY);
-    } else {
-        dstImg = srcImg.clone();
-    }
-    equalizeHist(srcImg, dstImg);
+    //    srcImg = QImage2cvMat(src);
+    //    if (srcImg.channels() != 1) {
+    //        cvtColor(srcImg, srcImg, CV_BGR2GRAY);
+    //    } else {
+    //        dstImg = srcImg.clone();
+    //    }
+    //    equalizeHist(srcImg, dstImg);
     // 直方图均衡化
     QImage dst = cvMat2QImage(dstImg);
     return dst;
@@ -553,7 +572,8 @@ QImage QOpencvProcessing::Histeq(QImage src) {
 
 // 图像腐蚀
 
-QImage QOpencvProcessing::Erode(QImage src, int elem, int kernel, int times) {
+QImage QOpencvProcessing::Erode(QImage src, int elem, int kernel, int times)
+{
     // 腐蚀
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -566,14 +586,15 @@ QImage QOpencvProcessing::Erode(QImage src, int elem, int kernel, int times) {
         erosion_type = MORPH_ELLIPSE;
     }
     Mat element = getStructuringElement(
-                      erosion_type, Size(2 * kernel + 3, 2 * kernel + 3),
-                      Point(kernel + 1, kernel + 1));
+      erosion_type, Size(2 * kernel + 3, 2 * kernel + 3),
+      Point(kernel + 1, kernel + 1));
     erode(srcImg, dstImg, element, Point(-1, -1), times);
     QImage dst = cvMat2QImage(dstImg);
     return dst;
 }
 
-QImage QOpencvProcessing::Dilate(QImage src, int elem, int kernel, int times) {
+QImage QOpencvProcessing::Dilate(QImage src, int elem, int kernel, int times)
+{
     // 膨胀
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -593,7 +614,8 @@ QImage QOpencvProcessing::Dilate(QImage src, int elem, int kernel, int times) {
     return dst;
 }
 
-QImage QOpencvProcessing::Open(QImage src, int elem, int kernel, int times) {
+QImage QOpencvProcessing::Open(QImage src, int elem, int kernel, int times)
+{
     // 开运算
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -604,7 +626,8 @@ QImage QOpencvProcessing::Open(QImage src, int elem, int kernel, int times) {
     return dst;
 }
 
-QImage QOpencvProcessing::Close(QImage src, int elem, int kernel, int times) {
+QImage QOpencvProcessing::Close(QImage src, int elem, int kernel, int times)
+{
     // 闭运算
     Mat srcImg, dstImg;
     srcImg = QImage2cvMat(src);
@@ -615,30 +638,32 @@ QImage QOpencvProcessing::Close(QImage src, int elem, int kernel, int times) {
     return dst;
 }
 
-QImage QOpencvProcessing::Grad(QImage src, int elem, int kernel) {
+QImage QOpencvProcessing::Grad(QImage src, int elem, int kernel)
+{
     // 形态学梯度
     Mat srcImg, grayImg, dstImg;
-    srcImg = QImage2cvMat(src);
-    Mat element = getStructuringElement(elem, Size(2 * kernel + 3, 2 * kernel + 3),
-                                        Point(kernel + 1, kernel + 1));
-    if (srcImg.channels() != 1) {
-        cvtColor(srcImg, grayImg, CV_BGR2GRAY);
-    } else {
-        grayImg = srcImg.clone();
-    }
-    morphologyEx(grayImg, dstImg, MORPH_GRADIENT, element);
+    //    srcImg = QImage2cvMat(src);
+    //    Mat element = getStructuringElement(elem, Size(2 * kernel + 3, 2 * kernel + 3),
+    //                                        Point(kernel + 1, kernel + 1));
+    //    if (srcImg.channels() != 1) {
+    //        cvtColor(srcImg, grayImg, CV_BGR2GRAY);
+    //    } else {
+    //        grayImg = srcImg.clone();
+    //    }
+    //    morphologyEx(grayImg, dstImg, MORPH_GRADIENT, element);
     QImage dst = cvMat2QImage(dstImg);
     return dst;
 }
 
-QImage QOpencvProcessing::Tophat(QImage src, int elem, int kernel) {
+QImage QOpencvProcessing::Tophat(QImage src, int elem, int kernel)
+{
     // 顶帽操作
     Mat srcImg, grayImg, dstImg;
     srcImg = QImage2cvMat(src);
     Mat element = getStructuringElement(elem, Size(2 * kernel + 3, 2 * kernel + 3),
                                         Point(kernel + 1, kernel + 1));
     if (srcImg.channels() != 1) {
-        cvtColor(srcImg, grayImg, CV_BGR2GRAY);
+        //        cvtColor(srcImg, grayImg, CV_BGR2GRAY);
     } else {
         grayImg = srcImg.clone();
     }
@@ -647,19 +672,19 @@ QImage QOpencvProcessing::Tophat(QImage src, int elem, int kernel) {
     return dst;
 }
 
-QImage QOpencvProcessing::Blackhat(QImage src, int elem, int kernel) {
+QImage QOpencvProcessing::Blackhat(QImage src, int elem, int kernel)
+{
     // 黑帽操作
     Mat srcImg, grayImg, dstImg;
-    srcImg = QImage2cvMat(src);
-    Mat element = getStructuringElement(elem, Size(2 * kernel + 3, 2 * kernel + 3),
-                                        Point(kernel + 1, kernel + 1));
-    if (srcImg.channels() != 1) {
-        cvtColor(srcImg, grayImg, CV_BGR2GRAY);
-    } else {
-        grayImg = srcImg.clone();
-    }
-    morphologyEx(grayImg, dstImg, MORPH_BLACKHAT, element);
+    //    srcImg = QImage2cvMat(src);
+    //    Mat element = getStructuringElement(elem, Size(2 * kernel + 3, 2 * kernel + 3),
+    //                                        Point(kernel + 1, kernel + 1));
+    //    if (srcImg.channels() != 1) {
+    //        cvtColor(srcImg, grayImg, CV_BGR2GRAY);
+    //    } else {
+    //        grayImg = srcImg.clone();
+    //    }
+    //    morphologyEx(grayImg, dstImg, MORPH_BLACKHAT, element);
     QImage dst = cvMat2QImage(dstImg);
     return dst;
 }
-

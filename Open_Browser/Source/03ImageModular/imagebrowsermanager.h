@@ -1,4 +1,4 @@
-#ifndef IMAGEBROWSERMANAGER_H
+﻿#ifndef IMAGEBROWSERMANAGER_H
 #define IMAGEBROWSERMANAGER_H
 
 /*
@@ -12,30 +12,29 @@
 #include "qopencvprocessing.h"
 #include "qopencvwidget.h"
 
-class ImageBrowserManager: public QObject {
+class ImageBrowserManager : public QObject
+{
     Q_OBJECT
-  public:
-
+public:
     explicit ImageBrowserManager(QOpencvWidget &widget,
                                  QObject *parent = nullptr);
     virtual ~ImageBrowserManager() override;
     void OpenStlFile(const QString &file_path = "");
-  public Q_SLOTS:
+public Q_SLOTS:
     void SlotImgProcess(const int &operation, const QString &text);
-  Q_SIGNALS:
+Q_SIGNALS:
     void SignalPromptInformationOut(const QString &text);
-  private:
+
+private:
     void Initial();
     void UnDo();
     void ReDo();
     void UpDataImage(const QImage);
-  private:
+
+private:
     QOpencvWidget &widget_;
-    QVector<QImage> img_vector_;	                // 存储图像的Vector容器
-    QVector<QImage>::iterator imt_iter_;		// Vector迭代器
-
-
-
+    QVector<QImage> img_vector_; // 存储图像的Vector容器
+    QVector<QImage>::iterator imt_iter_; // Vector迭代器
 };
 
 #endif // IMAGEBROWSERMANAGER_H

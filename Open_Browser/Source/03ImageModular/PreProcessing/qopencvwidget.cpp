@@ -2,16 +2,19 @@
 // 01 Frame includes
 #include "qopencvwidget.h"
 
-QOpencvWidget::QOpencvWidget(QWidget *parent) :
-    QWidget(parent) {
+QOpencvWidget::QOpencvWidget(QWidget *parent)
+  : QWidget(parent)
+{
     this->Initial();
 }
 
-QOpencvWidget::~QOpencvWidget() {
+QOpencvWidget::~QOpencvWidget()
+{
 }
 
-void QOpencvWidget::SetSurface(const QImage value) {
-    int tmp_height = img_.height() - value.height() ;
+void QOpencvWidget::SetSurface(const QImage value)
+{
+    int tmp_height = img_.height() - value.height();
     int tmp_width = img_.width() - value.width();
     img_ = value;
     if (tmp_height > 0 || tmp_width > 0) {
@@ -22,11 +25,13 @@ void QOpencvWidget::SetSurface(const QImage value) {
     opencv_pixmap_->setPixmap(QPixmap::fromImage(img_));
 }
 
-QImage QOpencvWidget::GetSurface() {
+QImage QOpencvWidget::GetSurface()
+{
     return img_;
 }
 
-void QOpencvWidget::Initial() {
+void QOpencvWidget::Initial()
+{
     this->setObjectName(QStringLiteral("QOpencvWidget"));
     gridLayout = new QGridLayout(this);
     gridLayout->setContentsMargins(0, 0, 0, 0);
@@ -40,27 +45,34 @@ void QOpencvWidget::Initial() {
     graphicsView->show();
 }
 
-QOpencvPixmapItem::QOpencvPixmapItem(QGraphicsPixmapItem *parent):
-    QGraphicsPixmapItem(parent) {
+QOpencvPixmapItem::QOpencvPixmapItem(QGraphicsPixmapItem *parent)
+  : QGraphicsPixmapItem(parent)
+{
 }
 
-QOpencvPixmapItem::~QOpencvPixmapItem() {
+QOpencvPixmapItem::~QOpencvPixmapItem()
+{
 }
-QOpencvScene::QOpencvScene(QGraphicsScene *parent):
-    QGraphicsScene(parent) {
-}
-
-QOpencvScene::~QOpencvScene() {
-}
-
-QOpencvView::QOpencvView(QWidget *parent):
-    QGraphicsView(parent) {
+QOpencvScene::QOpencvScene(QGraphicsScene *parent)
+  : QGraphicsScene(parent)
+{
 }
 
-QOpencvView::~QOpencvView() {
+QOpencvScene::~QOpencvScene()
+{
 }
 
-void QOpencvView::wheelEvent(QWheelEvent *event) {
+QOpencvView::QOpencvView(QWidget *parent)
+  : QGraphicsView(parent)
+{
+}
+
+QOpencvView::~QOpencvView()
+{
+}
+
+void QOpencvView::wheelEvent(QWheelEvent *event)
+{
     if (event->delta() > 0) {
         this->scale(1.1, 1.1);
     } else {

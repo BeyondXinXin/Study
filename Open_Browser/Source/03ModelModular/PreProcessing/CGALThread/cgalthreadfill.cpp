@@ -2,53 +2,56 @@
 #include "cgalthreadfill.h"
 
 // C++ includes
-#include <vector>
-#include <fstream>
 #include <fstream>
 #include <iostream>
-#include <boost/foreach.hpp>
+#include <vector>
+//#include <boost/foreach.hpp>
 
-// CGAL includes
-#include <CGAL/Polyhedron_3.h>
-#include <CGAL/Surface_mesh.h>
-#include <CGAL/read_vtk_image_data.h>
-#include <CGAL/Polygon_mesh_processing/corefinement.h>
-#include <CGAL/Polygon_mesh_processing/triangulate_hole.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+//// CGAL includes
+//#include <CGAL/Polyhedron_3.h>
+//#include <CGAL/Surface_mesh.h>
+//#include <CGAL/read_vtk_image_data.h>
+//#include <CGAL/Polygon_mesh_processing/corefinement.h>
+//#include <CGAL/Polygon_mesh_processing/triangulate_hole.h>
+//#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+//#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
 
 // VTK includes
 #include <vtkActor.h>
-#include <vtkRenderer.h>
-#include <vtkProperty.h>
-#include <vtkPointData.h>
-#include <vtkThreshold.h>
-#include <vtkPropPicker.h>
-#include <vtkNamedColors.h>
-#include <vtkGenericCell.h>
-#include <vtkCellIterator.h>
 #include <vtkAppendFilter.h>
+#include <vtkCellIterator.h>
 #include <vtkCleanPolyData.h>
-#include <vtkMassProperties.h>
-#include <vtkTriangleFilter.h>
-#include <vtkGeometryFilter.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkFillHolesFilter.h>
-#include <vtkPolyDataNormals.h>
-#include <vtkUnstructuredGrid.h>
 #include <vtkConnectivityFilter.h>
+#include <vtkFillHolesFilter.h>
+#include <vtkGenericCell.h>
+#include <vtkGeometryFilter.h>
+#include <vtkMassProperties.h>
+#include <vtkNamedColors.h>
+#include <vtkPointData.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPolyDataNormals.h>
+#include <vtkPropPicker.h>
+#include <vtkProperty.h>
+#include <vtkRenderer.h>
+#include <vtkThreshold.h>
+#include <vtkTriangleFilter.h>
+#include <vtkUnstructuredGrid.h>
 
-FillSurfaceSelector::FillSurfaceSelector(QObject *parent) : QObject(parent) {
+FillSurfaceSelector::FillSurfaceSelector(QObject *parent)
+  : QObject(parent)
+{
     this->Initial();
 }
 
-FillSurfaceSelector::~FillSurfaceSelector() {
+FillSurfaceSelector::~FillSurfaceSelector()
+{
     if (this->own_renderer_ == true) {
         this->vmtk_renderer_->deleteLater();
     }
 }
 
-void FillSurfaceSelector::Execute() {
+void FillSurfaceSelector::Execute()
+{
     qDebug();
     if (this->vmtk_renderer_ == nullptr) {
         this->vmtk_renderer_ = new CustomVtkRenderer();
@@ -66,14 +69,14 @@ void FillSurfaceSelector::Execute() {
     normals->SplittingOff();
     normals->Update();
     normals->GetOutput()->GetPointData()->SetNormals(
-        this->surface_->GetPointData()->GetNormals());
+      this->surface_->GetPointData()->GetNormals());
     vtkIdType num_original_cells = this->surface_->GetNumberOfCells();
     vtkIdType num_new_cells = normals->GetOutput()->GetNumberOfCells();
     vtkSmartPointer<vtkCellIterator> it = normals->GetOutput()->NewCellIterator();
     vtkIdType num_cells = 0;
     for (it->InitTraversal();
-            !it->IsDoneWithTraversal() && num_cells < num_original_cells;
-            it->GoToNextCell(), ++num_cells) {
+         !it->IsDoneWithTraversal() && num_cells < num_original_cells;
+         it->GoToNextCell(), ++num_cells) {
     }
     vtkNew<vtkPolyData> hole_poly_data;
     hole_poly_data->Allocate(normals->GetOutput(), num_new_cells - num_original_cells);
@@ -121,8 +124,7 @@ void FillSurfaceSelector::Execute() {
         this->filled_surface_list_.append(clean_poly_data->GetOutput());
         vtkNew<vtkPolyDataMapper> filled_mapper;
         filled_mapper->SetInputData(geometry_filter->GetOutput());
-        filled_mapper->SetScalarRange(geometry_filter->GetOutput()->GetPointData()
-                                      ->GetArray("RegionId")->GetRange());
+        filled_mapper->SetScalarRange(geometry_filter->GetOutput()->GetPointData()->GetArray("RegionId")->GetRange());
         filled_mapper->SetArrayId(i);
         filled_mapper->ScalarVisibilityOff();
         filled_mapper->Update();
@@ -139,7 +141,8 @@ void FillSurfaceSelector::Execute() {
     }
 }
 
-void FillSurfaceSelector::SelectorOff() {
+void FillSurfaceSelector::SelectorOff()
+{
     for (const vtkSmartPointer<vtkActor> &actor : this->filled_actor_list_) {
         this->vmtk_renderer_->GetRenderer()->RemoveActor(actor);
     }
@@ -148,30 +151,36 @@ void FillSurfaceSelector::SelectorOff() {
     enable_ = false;
 }
 
-void FillSurfaceSelector::SelectorOn() {
+void FillSurfaceSelector::SelectorOn()
+{
     for (const vtkSmartPointer<vtkActor> &actor : this->filled_actor_list_) {
         this->vmtk_renderer_->GetRenderer()->AddActor(actor);
     }
     enable_ = true;
 }
 
-void FillSurfaceSelector::SetVmtkRenderer(const QPointer<CustomVtkRenderer> value) {
+void FillSurfaceSelector::SetVmtkRenderer(const QPointer<CustomVtkRenderer> value)
+{
     this->vmtk_renderer_ = value;
 }
 
-void FillSurfaceSelector::SetSurface(const vtkSmartPointer<vtkPolyData> value) {
+void FillSurfaceSelector::SetSurface(const vtkSmartPointer<vtkPolyData> value)
+{
     this->surface_ = value;
 }
 
-vtkSmartPointer<vtkPolyData> FillSurfaceSelector::GetSurface() {
+vtkSmartPointer<vtkPolyData> FillSurfaceSelector::GetSurface()
+{
     return this->surface_;
 }
 
-qint32 FillSurfaceSelector::GetFillCount() {
+qint32 FillSurfaceSelector::GetFillCount()
+{
     return this->filled_actor_list_.size();
 }
 
-void FillSurfaceSelector::Initial() {
+void FillSurfaceSelector::Initial()
+{
     this->enable_ = false;
     this->first_connect_ = true;
     this->own_renderer_ = false;
@@ -183,7 +192,8 @@ void FillSurfaceSelector::Initial() {
     this->last_picked_property_ = vtkSmartPointer<vtkProperty>::New();
 }
 
-void FillSurfaceSelector::FillerCallback() {
+void FillSurfaceSelector::FillerCallback()
+{
     qDebug();
     vtkNew<vtkAppendFilter> append_filter;
     append_filter->AddInputData(this->filled_surface_list_.at(this->fill_id_));
@@ -216,7 +226,8 @@ void FillSurfaceSelector::FillerCallback() {
     }
 }
 
-void FillSurfaceSelector::SlotKeyPressed(const QString &key) {
+void FillSurfaceSelector::SlotKeyPressed(const QString &key)
+{
     if (this->enable_) {
         if (key == "space" && (fill_id_ >= 0)) {
             this->SelectorOff();
@@ -228,14 +239,15 @@ void FillSurfaceSelector::SlotKeyPressed(const QString &key) {
     }
 }
 
-void FillSurfaceSelector::SlotMouseClicked(const qint32 x, const qint32 y) {
+void FillSurfaceSelector::SlotMouseClicked(const qint32 x, const qint32 y)
+{
     if (!this->enable_) {
-        return ;
+        return;
     }
     vtkNew<vtkPropPicker> picker;
     picker->Pick(x, y, 0, this->vmtk_renderer_->GetRenderer());
     if (!this->filled_actor_list_.contains(picker->GetActor())) {
-        return ;
+        return;
     }
     if (this->last_picked_actor_) {
         this->last_picked_actor_->GetProperty()->DeepCopy(this->last_picked_property_);
@@ -250,7 +262,8 @@ void FillSurfaceSelector::SlotMouseClicked(const qint32 x, const qint32 y) {
     }
 }
 
-void FillSurfaceSelector::STL2OFF(const QString off_filename, const qint32 num) {
+void FillSurfaceSelector::STL2OFF(const QString off_filename, const qint32 num)
+{
     qDebug();
     if (num == 0) {
         if (this->surface_ == nullptr) {
@@ -266,17 +279,17 @@ void FillSurfaceSelector::STL2OFF(const QString off_filename, const qint32 num) 
         if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
             QTextStream stream(&file);
             stream.seek(file.size());
-            stream << "OFF" << "\n";
+            stream << "OFF"
+                   << "\n";
             stream << this->surface_->GetNumberOfPoints() << " "
                    << this->surface_->GetNumberOfCells() << " 0\n";
-            for (qint32 ww = 0; ww < this->surface_->GetNumberOfPoints() ; ww++) {
+            for (qint32 ww = 0; ww < this->surface_->GetNumberOfPoints(); ww++) {
                 this->surface_->GetPoint(ww, x);
                 stream << x[0] << " " << x[1] << " " << x[2] << "\n";
             }
-            for (qint32 ww = 0; ww < this->surface_->GetNumberOfCells() ; ww++) {
+            for (qint32 ww = 0; ww < this->surface_->GetNumberOfCells(); ww++) {
                 stream << this->surface_->GetCell(ww)->GetNumberOfPoints() << " ";
-                for (qint32 i = 0; i <
-                        this->surface_->GetCell(ww)->GetNumberOfPoints(); i++) {
+                for (qint32 i = 0; i < this->surface_->GetCell(ww)->GetNumberOfPoints(); i++) {
                     stream << this->surface_->GetCell(ww)->GetPointId(i) << " ";
                 }
                 stream << "\n";
@@ -297,17 +310,17 @@ void FillSurfaceSelector::STL2OFF(const QString off_filename, const qint32 num) 
         if (file.open(QIODevice::ReadWrite | QIODevice::Text)) {
             QTextStream stream(&file);
             stream.seek(file.size());
-            stream << "OFF" << "\n";
+            stream << "OFF"
+                   << "\n";
             stream << this->surface_region_->GetNumberOfPoints() << " "
                    << this->surface_region_->GetNumberOfCells() << " 0\n";
-            for (qint32 ww = 0; ww < this->surface_region_->GetNumberOfPoints() ; ww++) {
+            for (qint32 ww = 0; ww < this->surface_region_->GetNumberOfPoints(); ww++) {
                 this->surface_region_->GetPoint(ww, x);
                 stream << x[0] << " " << x[1] << " " << x[2] << "\n";
             }
-            for (qint32 ww = 0; ww < this->surface_region_->GetNumberOfCells() ; ww++) {
+            for (qint32 ww = 0; ww < this->surface_region_->GetNumberOfCells(); ww++) {
                 stream << this->surface_region_->GetCell(ww)->GetNumberOfPoints() << " ";
-                for (qint32 i = 0; i <
-                        this->surface_region_->GetCell(ww)->GetNumberOfPoints(); i++) {
+                for (qint32 i = 0; i < this->surface_region_->GetCell(ww)->GetNumberOfPoints(); i++) {
                     stream << this->surface_region_->GetCell(ww)->GetPointId(i) << " ";
                 }
                 stream << "\n";
@@ -317,20 +330,21 @@ void FillSurfaceSelector::STL2OFF(const QString off_filename, const qint32 num) 
     }
 }
 
-bool FillSurfaceSelector::OFF2STL(const QString off_filename) {
+bool FillSurfaceSelector::OFF2STL(const QString off_filename)
+{
     std::string inputFilename = off_filename.toLocal8Bit().data();
     std::ifstream fin(inputFilename.c_str());
     vtkSmartPointer<vtkPolyData> surface = CustomReader(fin);
     vtkSmartPointer<vtkTriangleFilter> triangleFilter =
-        vtkSmartPointer<vtkTriangleFilter>::New();
+      vtkSmartPointer<vtkTriangleFilter>::New();
     triangleFilter->SetInputData(surface);
     vtkSmartPointer<vtkPolyDataNormals> normals =
-        vtkSmartPointer<vtkPolyDataNormals>::New();
+      vtkSmartPointer<vtkPolyDataNormals>::New();
     normals->SetInputConnection(triangleFilter->GetOutputPort());
     normals->ConsistencyOn();
     normals->SplittingOff();
     vtkSmartPointer<vtkMassProperties> massProperties =
-        vtkSmartPointer<vtkMassProperties>::New();
+      vtkSmartPointer<vtkMassProperties>::New();
     massProperties->SetInputConnection(normals->GetOutputPort());
     massProperties->Update();
     fin.close();
@@ -344,23 +358,22 @@ bool FillSurfaceSelector::OFF2STL(const QString off_filename) {
     return false;
 }
 
-vtkSmartPointer<vtkPolyData> FillSurfaceSelector::CustomReader(std::istream &infile) {
+vtkSmartPointer<vtkPolyData> FillSurfaceSelector::CustomReader(std::istream &infile)
+{
     qDebug();
     char buf[1000];
     infile.getline(buf, 1000);
     if (strcmp(buf, "off") == 0 || strcmp(buf, "OFF") == 0) {
         vtkIdType number_of_points, number_of_triangles, number_of_lines;
         infile >> number_of_points >> number_of_triangles >> number_of_lines;
-        vtkSmartPointer<vtkPoints> points
-            = vtkSmartPointer<vtkPoints>::New();
+        vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
         points->SetNumberOfPoints(number_of_points);
         for (vtkIdType i = 0; i < number_of_points; i++) {
             double x, y, z;
             infile >> x >> y >> z;
             points->SetPoint(i, x, y, z);
         }
-        vtkSmartPointer<vtkCellArray> polys
-            = vtkSmartPointer<vtkCellArray>::New();
+        vtkSmartPointer<vtkCellArray> polys = vtkSmartPointer<vtkCellArray>::New();
         qint32 n;
         vtkIdType type;
         for (vtkIdType i = 0; i < number_of_triangles; i++) {
@@ -380,63 +393,64 @@ vtkSmartPointer<vtkPolyData> FillSurfaceSelector::CustomReader(std::istream &inf
     return polydata;
 }
 
-bool FillSurfaceSelector::CGALFunctionFill() {
-    typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
-    typedef CGAL::Polyhedron_3<Kernel>     Polyhedron;
-    typedef Polyhedron::Halfedge_handle    Halfedge_handle;
-    typedef Polyhedron::Facet_handle       Facet_handle;
-    typedef Polyhedron::Vertex_handle      Vertex_handle;
-    typedef Kernel::Point_3 Point;
-    typedef Polyhedron::Halfedge_iterator         Iterator;
-    std::ifstream input;
-    input.open("fill_region.off");
-    Polyhedron poly_region;
-    if (!(input >> poly_region)) {
-        std::cerr << "01 Not a valid off file." << std::endl;
-        return false;
-    }
-    input.close();
-    input.open("fill.off");
-    Polyhedron poly;
-    if (!(input >> poly)) {
-        std::cerr << "02 Not a valid off file." << std::endl;
-        return false;
-    }
-    input.close();
-    QList<Point> region_list;
-    Halfedge_handle region;
-    qint32 num = 0;
-    for (Iterator e = poly_region.halfedges_begin();
-            num < 10; ++e) {
-        ++num;
-        region_list.push_back(e ->vertex()->point());
-    }
-    BOOST_FOREACH(Halfedge_handle h, halfedges(poly)) {
-        if (h->is_border()) {
-            Point tmp;
-            foreach (tmp, region_list) {
-                if (h->vertex()->point() == tmp) {
-                    std::vector<Facet_handle>  patch_facets;
-                    std::vector<Vertex_handle> patch_vertices;
-                    if (CGAL::cpp11::get<0>(
-                                CGAL::Polygon_mesh_processing::
-                                triangulate_refine_and_fair_hole(
-                                    poly, h,
-                                    std::back_inserter(patch_facets),
-                                    std::back_inserter(patch_vertices),
-                                    CGAL::Polygon_mesh_processing::parameters::
-                                    vertex_point_map(get(CGAL::vertex_point, poly)).
-                                    geom_traits(Kernel())))) {
-                    }
-                    if (patch_facets.size() > 0) {
-                        std::ofstream out("fill.off");
-                        out << poly ;
-                        out.close();
-                        return true;
-                    }
-                }
-            }
-        }
-    }
+bool FillSurfaceSelector::CGALFunctionFill()
+{
+    //    typedef CGAL::Exact_predicates_inexact_constructions_kernel Kernel;
+    //    typedef CGAL::Polyhedron_3<Kernel> Polyhedron;
+    //    typedef Polyhedron::Halfedge_handle Halfedge_handle;
+    //    typedef Polyhedron::Facet_handle Facet_handle;
+    //    typedef Polyhedron::Vertex_handle Vertex_handle;
+    //    typedef Kernel::Point_3 Point;
+    //    typedef Polyhedron::Halfedge_iterator Iterator;
+    //    std::ifstream input;
+    //    input.open("fill_region.off");
+    //    Polyhedron poly_region;
+    //    if (!(input >> poly_region)) {
+    //        std::cerr << "01 Not a valid off file." << std::endl;
+    //        return false;
+    //    }
+    //    input.close();
+    //    input.open("fill.off");
+    //    Polyhedron poly;
+    //    if (!(input >> poly)) {
+    //        std::cerr << "02 Not a valid off file." << std::endl;
+    //        return false;
+    //    }
+    //    input.close();
+    //    QList<Point> region_list;
+    //    Halfedge_handle region;
+    //    qint32 num = 0;
+    //    for (Iterator e = poly_region.halfedges_begin();
+    //         num < 10; ++e) {
+    //        ++num;
+    //        region_list.push_back(e->vertex()->point());
+    //    }
+    //    BOOST_FOREACH (Halfedge_handle h, halfedges(poly)) {
+    //        if (h->is_border()) {
+    //            Point tmp;
+    //            foreach (tmp, region_list) {
+    //                if (h->vertex()->point() == tmp) {
+    //                    std::vector<Facet_handle> patch_facets;
+    //                    std::vector<Vertex_handle> patch_vertices;
+    //                    if (CGAL::cpp11::get<0>(
+    //                          CGAL::Polygon_mesh_processing::
+    //                            triangulate_refine_and_fair_hole(
+    //                              poly, h,
+    //                              std::back_inserter(patch_facets),
+    //                              std::back_inserter(patch_vertices),
+    //                              CGAL::Polygon_mesh_processing::parameters::
+    //                                vertex_point_map(get(CGAL::vertex_point, poly))
+    //                                  .geom_traits(Kernel())))) {
+    //                    }
+    //                    if (patch_facets.size() > 0) {
+    //                        std::ofstream out("fill.off");
+    //                        out << poly;
+    //                        out.close();
+    //                        return true;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
     return false;
 }
