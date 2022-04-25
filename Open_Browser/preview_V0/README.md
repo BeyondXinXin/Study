@@ -1,7 +1,5 @@
 # QT_openBrowser
 
-[![star](https://gitee.com/yaoxin001/openBrowser/badge/star.svg?theme=gray)](https://gitee.com/yaoxin001/openBrowser/stargazers)   
-
 ## 介绍
 基于QT      一个开源的文件浏览器  
 目前支持  
